@@ -539,10 +539,6 @@ st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_ht
 st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
 
 
-
-    # ── CHAT ──────────────────────────────────────────────────
-
-
 # ── Footer ────────────────────────────────────────────────────
 st.markdown("""
 <div style="padding:1rem 3rem; border-top:1px solid #D4CCB8; margin-top:2rem;
