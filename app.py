@@ -317,7 +317,7 @@ if not st.session_state.doc_text:
     </div>
     """, unsafe_allow_html=True)
 else:
-    tab1, tab2, tab3, tab4 = st.tabs(["💬 Chat", "🔍 Analysis", "📊 Compare", "📄 Document"])
+    tab1, tab2, tab4 = st.tabs(["💬 Chat", "🔍 Analysis", "📄 Document"])
     with tab1:
         st.markdown(f'<div style="{pad} padding-bottom:0;">', unsafe_allow_html=True)
 
@@ -416,43 +416,6 @@ else:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── COMPARE ───────────────────────────────────────────────
-    with tab3:
-        st.markdown(f'<div style="{pad}">', unsafe_allow_html=True)
-
-        if not st.session_state.doc_text_2:
-            st.markdown("""<div style="text-align:center; padding:3rem; color:#A09890;
-                            font-family:'DM Mono',monospace; font-size:0.78rem;">
-                            Upload a second document above to compare</div>""",
-                        unsafe_allow_html=True)
-        else:
-            if st.button("⚖ Compare Documents", type="primary", use_container_width=True):
-                with st.spinner("Comparing documents..."):
-                    client = get_ollama_client()
-                    compare_prompt = f"""Compare these two legal documents. Identify:
-    1. Key differences in obligations
-    2. Key differences in rights
-    3. Which is more favorable and why
-    4. Unique clauses in each
-    5. Risk comparison
-
-    Document 1:\n{st.session_state.doc_text[:3000]}
-    Document 2:\n{st.session_state.doc_text_2[:3000]}"""
-                    response = client.chat(model=OLLAMA_MODEL, messages=[
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": compare_prompt}
-                    ])
-                    st.session_state.analysis_cache["compare"] = re.sub(
-                        r'^#{1,6}\s+', '', response.message.content, flags=re.MULTILINE)
-
-            if "compare" in st.session_state.analysis_cache:
-                st.markdown(st.session_state.analysis_cache["compare"])
-                st.markdown("""<div class="verdict-disclaimer">
-                      ⚠ This comparison is for informational purposes only.
-                      Always consult a qualified attorney before making decisions.
-                    </div>""", unsafe_allow_html=True)
-
-        st.markdown("</div>", unsafe_allow_html=True)
 
     # ── DOCUMENT ──────────────────────────────────────────────
     with tab4:
@@ -485,61 +448,46 @@ else:
         st.markdown("</div>", unsafe_allow_html=True)
     
 # ── Upload area — full width ───────────────────────────────────
+document_uploaded=false
+if document_uploaded==false:
+    st.markdown(f'<div style="{pad} padding-bottom:0.5rem;">', unsafe_allow_html=True)
 
-st.markdown(f'<div style="{pad} padding-bottom:0.5rem;">', unsafe_allow_html=True)
-
-st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
-            color:#6B6560; text-transform:uppercase; letter-spacing:0.1em;
-            margin-bottom:0.5rem;text-align: center;">Upload Document</div>""", unsafe_allow_html=True)
-st.markdown(
-    """
-    <style>
-    div[data-testid="stFileUploader"] {
-        align-items: center;
-        flex-direction: column;
-        justify-content: center;
-        display:flex;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-uploaded = st.file_uploader("Upload", type=["pdf", "txt"], label_visibility="collapsed")
-if uploaded:
-    col_left, col_btn, col_right = st.columns([1, 1.2, 1])
-
-    with col_btn:
-        if st.button("⚖ Process Document", type="primary", use_container_width=True):
-            with st.spinner("Extracting and indexing..."):
-                raw = uploaded.read()
-                text = extract_text(raw, uploaded.name)
-                doc_id = uploaded.name.replace(" ", "_").replace(".", "_")
-                col = index_document(text, doc_id)
-                st.session_state.doc_text = text
-                st.session_state.doc_id = doc_id
-                st.session_state.collection = col
-                st.session_state.chat_history = []
-                st.session_state.analysis_cache = {}
-            st.success(f"Ready — {len(text):,} characters indexed")
-            time.sleep(5)
-            st.rerun()
-
-if st.session_state.doc_text:
     st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
                 color:#6B6560; text-transform:uppercase; letter-spacing:0.1em;
-                margin-top:1rem; margin-bottom:0.5rem;">Compare with second document (optional)</div>""",
-                unsafe_allow_html=True)
-    uploaded_2 = st.file_uploader("Second doc", type=["pdf", "txt"],
-                                   label_visibility="collapsed", key="doc2")
-    if uploaded_2:
-        raw2 = uploaded_2.read()
-        st.session_state.doc_text_2 = extract_text(raw2, uploaded_2.name)
-        st.success("Second document loaded")
+                margin-bottom:0.5rem;text-align: center;">Upload Document</div>""", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stFileUploader"] {
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            display:flex;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    uploaded = st.file_uploader("Upload", type=["pdf", "txt"], label_visibility="collapsed")
+    if uploaded:
+        col_left, col_btn, col_right = st.columns([1, 1.2, 1])
 
-st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
-st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
-
+        with col_btn:
+            if st.button("⚖ Process Document", type="primary", use_container_width=True):
+                with st.spinner("Extracting and indexing..."):
+                    raw = uploaded.read()
+                    text = extract_text(raw, uploaded.name)
+                    doc_id = uploaded.name.replace(" ", "_").replace(".", "_")
+                    col = index_document(text, doc_id)
+                    st.session_state.doc_text = text
+                    st.session_state.doc_id = doc_id
+                    st.session_state.collection = col
+                    st.session_state.chat_history = []
+                    st.session_state.analysis_cache = {}
+                st.success(f"Ready — {len(text):,} characters indexed")
+                time.sleep(5)
+                document_uploaded=true
+                st.rerun()
 
 # ── Footer ────────────────────────────────────────────────────
 st.markdown("""
