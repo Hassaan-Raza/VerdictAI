@@ -375,6 +375,7 @@ if st.session_state.document_uploaded:
             if st.session_state.chat_history:
                 if st.button("Clear conversation", use_container_width=True):
                     st.session_state.chat_history = []
+                    st.session_state.document_uploaded = False
                     st.rerun()
 
             st.markdown("</div>", unsafe_allow_html=True)
