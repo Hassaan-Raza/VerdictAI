@@ -506,9 +506,18 @@ st.markdown(
 )
 uploaded = st.file_uploader("Upload", type=["pdf", "txt"], label_visibility="collapsed")
 if uploaded:
-
-    st.markdown("<div style='text-align: center;align-items:center;flex-direction:column,justify-content:center;display:flex;'>", unsafe_allow_html=True)
-
+    # Inject CSS targeting the button container underneath the file uploader
+    st.markdown(
+        """
+        <style>
+        div.stButton {
+            display: flex;
+            justify-content: center;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
     if st.button("⚖ Process Document", type="primary"):
         with st.spinner("Extracting and indexing..."):
@@ -523,8 +532,6 @@ if uploaded:
             st.session_state.analysis_cache = {}
         st.success(f"Ready — {len(text):,} characters indexed")
 
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
 if st.session_state.doc_text:
     st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
