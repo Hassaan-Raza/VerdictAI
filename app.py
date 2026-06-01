@@ -16,7 +16,7 @@ import faster_whisper
 # ── Page config ───────────────────────────────────────────────
 st.set_page_config(
     page_title="VerdictAI",
-    page_icon="⚖",
+    page_icon="🏛️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -206,13 +206,31 @@ section[data-testid="stSidebar"] > div {
 [data-testid="stSidebar"] label,
 [data-testid="stSidebarContent"] label {
   color: #A09890 !important;
+  font-family: var(--mono) !important;
 }
 [data-testid="stSidebar"] p,
-[data-testid="stSidebar"] span,
-[data-testid="stSidebarContent"] p,
-[data-testid="stSidebarContent"] span {
+[data-testid="stSidebarContent"] p {
   color: #C8C0B0 !important;
   font-family: var(--mono) !important;
+}
+/* Sidebar spans: default muted, but let inline styles (gold titles) win */
+[data-testid="stSidebar"] span:not([style]),
+[data-testid="stSidebarContent"] span:not([style]) {
+  color: #C8C0B0 !important;
+  font-family: var(--mono) !important;
+}
+
+/* Hide the material icon "keyboard_double_" that Streamlit renders for ⚖ */
+[data-testid="stSidebar"] [data-testid="stAppViewBlockContainer"] > div:first-child,
+header [data-testid="stAppName"] .material-symbols-rounded,
+[data-testid="stSidebarHeader"] .material-symbols-rounded,
+[data-testid="stSidebarHeader"] span[class*="material"] {
+  display: none !important;
+}
+/* Hide Streamlit's auto-generated sidebar page-title block and nav entirely */
+[data-testid="stSidebarHeader"],
+[data-testid="stSidebarNav"] {
+  display: none !important;
 }
 
 /* ── File uploader — sidebar (dark) ── */
@@ -246,21 +264,26 @@ section[data-testid="stSidebar"] > div {
   font-family: var(--mono) !important;
 }
 
-/* Fix "uploadupload" duplicate text — hide the extra instructions span */
-[data-testid="stFileUploaderDropzoneInstructions"] > div > span:last-child,
-[data-testid="stFileUploaderDropzoneInstructions"] > div > small {
+/* Fix "uploadupload" / "uploa@pload" duplicate text bug.
+   Streamlit renders TWO instruction nodes — we hide the outer wrapper's
+   direct text content while keeping the inner button fully intact. */
+[data-testid="stFileUploaderDropzoneInstructions"] {
+  overflow: hidden !important;
+  height: auto !important;
+}
+/* Hide the plain-text "Drag and drop" / "Limit …" paragraphs */
+[data-testid="stFileUploaderDropzoneInstructions"] > div > span,
+[data-testid="stFileUploaderDropzoneInstructions"] > div > small,
+[data-testid="stFileUploaderDropzoneInstructions"] > div > p {
   display: none !important;
 }
-[data-testid="stFileUploaderDropzoneInstructions"] > div {
-  display: flex !important;
-  flex-direction: column !important;
-}
-/* Show only the button label, hide raw text nodes rendered as spans */
-[data-testid="stFileUploaderDropzoneInstructions"] span {
-  display: none !important;
-}
-[data-testid="stFileUploaderDropzoneInstructions"] button span {
-  display: inline !important;
+/* But keep the Browse-files button and everything inside it visible */
+[data-testid="stFileUploaderDropzoneInstructions"] button,
+[data-testid="stFileUploaderDropzoneInstructions"] button *,
+[data-testid="stFileUploaderDropzoneInstructions"] > div > button {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* ── Main content text ── */
@@ -473,7 +496,7 @@ with st.sidebar:
     <div style="padding:1rem 0 1.5rem;">
       <div style="font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:600;
                   color:#C9A84C; margin-bottom:0.25rem;">VerdictAI</div>
-      <div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#6B6560;
+      <div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#A09890;
                   text-transform:uppercase; letter-spacing:0.1em;">Legal Intelligence Suite</div>
     </div>
     """, unsafe_allow_html=True)
@@ -498,7 +521,7 @@ with st.sidebar:
 
     if st.session_state.doc_text:
         st.markdown("<hr>", unsafe_allow_html=True)
-        st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#6B6560;
+        st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#A09890;
                     text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.6rem;">
                     Compare Documents</div>""", unsafe_allow_html=True)
         uploaded_2 = st.file_uploader("Second document", type=["pdf", "txt"],
@@ -524,7 +547,7 @@ with st.sidebar:
 
     st.markdown("<hr>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#6B6560; line-height:1.7;">
+    <div style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#8A8480; line-height:1.7;">
       VerdictAI provides legal information, not legal advice.
       Always consult a qualified attorney for important legal decisions.
     </div>
