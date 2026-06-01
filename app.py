@@ -302,7 +302,7 @@ st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_ht
 # ── Main content ──────────────────────────────────────────────
 document_uploaded=False
 pad = "padding: 1.5rem 3rem;"
-if document_uploaded:
+if document_uploaded==True:
     if not st.session_state.doc_text:
         st.markdown(f"""
         <div style="{pad}">
