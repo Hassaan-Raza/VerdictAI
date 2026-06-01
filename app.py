@@ -300,6 +300,7 @@ if st.session_state.show_info:
 
 st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
 # ── Main content ──────────────────────────────────────────────
+pad = "padding: 1.5rem 3rem;"
 if not st.session_state.doc_text:
     st.markdown(f"""
     <div style="{pad}">
@@ -484,7 +485,7 @@ else:
         st.markdown("</div>", unsafe_allow_html=True)
     
 # ── Upload area — full width ───────────────────────────────────
-pad = "padding: 1.5rem 3rem;"
+
 
 st.markdown(f'<div style="{pad} padding-bottom:0.5rem;">', unsafe_allow_html=True)
 
