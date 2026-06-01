@@ -227,10 +227,22 @@ section[data-testid="stSidebar"] > div {
   color: #6B6560 !important;
 }
 
-/* Fix "uploadupload" double-text bug in Streamlit's file uploader button */
-[data-testid="stFileUploaderDropzoneInput"] + div button span:last-child,
-[data-testid="stFileUploaderDropzone"] button span + span {
+/* Fix "uploadupload" double-text — hide the instructions text, keep the button */
+[data-testid="stFileUploaderDropzoneInstructions"] {
   display: none !important;
+}
+/* Keep the browse button visible and styled */
+[data-testid="stFileUploaderDropzone"] button {
+  display: inline-flex !important;
+  background: #2E2E3A !important;
+  color: #C9A84C !important;
+  border: 1px solid #C9A84C40 !important;
+  font-family: var(--mono) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.08em !important;
+  border-radius: 2px !important;
+  padding: 0.4rem 1rem !important;
+  margin: 0.5rem auto !important;
 }
 /* Ensure sidebar uploader label is readable */
 [data-testid="stSidebar"] [data-testid="stFileUploader"] label,
