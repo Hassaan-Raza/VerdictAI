@@ -265,25 +265,34 @@ header [data-testid="stAppName"] .material-symbols-rounded,
 }
 
 /* Fix "uploadupload" / "uploa@pload" duplicate text bug.
-   Streamlit renders TWO instruction nodes — we hide the outer wrapper's
-   direct text content while keeping the inner button fully intact. */
+   The cleanest fix: hide the entire instructions section (which contains
+   the duplicate text AND the glitching button), then style the dropzone
+   itself to look like a clean upload area with a pseudo-element label.
+   The dropzone zone remains fully clickable for file selection. */
 [data-testid="stFileUploaderDropzoneInstructions"] {
-  overflow: hidden !important;
-  height: auto !important;
-}
-/* Hide the plain-text "Drag and drop" / "Limit …" paragraphs */
-[data-testid="stFileUploaderDropzoneInstructions"] > div > span,
-[data-testid="stFileUploaderDropzoneInstructions"] > div > small,
-[data-testid="stFileUploaderDropzoneInstructions"] > div > p {
   display: none !important;
 }
-/* But keep the Browse-files button and everything inside it visible */
-[data-testid="stFileUploaderDropzoneInstructions"] button,
-[data-testid="stFileUploaderDropzoneInstructions"] button *,
-[data-testid="stFileUploaderDropzoneInstructions"] > div > button {
-  display: inline-flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+/* Make the dropzone show a clean "Click to upload" hint via its own padding */
+[data-testid="stFileUploaderDropzone"] {
+  min-height: 80px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  position: relative !important;
+}
+[data-testid="stFileUploaderDropzone"]::after {
+  content: "Click or drag file here";
+  font-family: 'DM Mono', monospace !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.08em !important;
+  pointer-events: none;
+}
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]::after {
+  color: #6A6470 !important;
+}
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"]::after {
+  color: var(--muted) !important;
 }
 
 /* ── Main content text ── */
