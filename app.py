@@ -300,155 +300,156 @@ if st.session_state.show_info:
 
 st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
 # ── Main content ──────────────────────────────────────────────
+document_uploaded=False
 pad = "padding: 1.5rem 3rem;"
-if not st.session_state.doc_text:
-    st.markdown(f"""
-    <div style="{pad}">
-      <div style="max-width:600px; margin:4rem auto; text-align:center;">
-        <div style="font-family:'Playfair Display',serif; font-size:3.5rem; color:#D4CCB8;
-                    margin-bottom:1rem; font-style:italic;">⚖</div>
-        <div style="font-family:'Playfair Display',serif; font-size:1.4rem; color:#6B6560;
-                    margin-bottom:0.8rem;">Upload a legal document to begin</div>
-        <div style="font-family:'DM Mono',monospace; font-size:0.75rem; color:#A09890; line-height:1.8;">
-          Contracts · Legislation · Court filings · NDAs · Terms of service<br>
-          Leases · Employment agreements · Any legal document, any jurisdiction
-        </div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-else:
-    tab1, tab2, tab4 = st.tabs(["💬 Chat", "🔍 Analysis", "📄 Document"])
-    with tab1:
-        st.markdown(f'<div style="{pad} padding-bottom:0;">', unsafe_allow_html=True)
-
-        quick_qs = {
-            "Summarize": "What is this document about and what are its main terms?",
-            "My obligations": "What am I required to do under this agreement?",
-            "My rights": "What rights and entitlements do I have under this document?",
-            "Red flags": "Are there any risky or unfavorable clauses I should know about?",
-            "Deadlines": "What are all the important dates and deadlines in this document?",
-            "Plain English": "Explain this entire document in simple plain English.",
-        }
-
-        qcols = st.columns(len(quick_qs))
-        for i, (label, question) in enumerate(quick_qs.items()):
-            if qcols[i].button(label, key=f"q_{i}", use_container_width=True):
-                st.session_state["pending_question"] = question
-                st.rerun()
-
-        st.markdown("<hr>", unsafe_allow_html=True)
-
-        for msg in st.session_state.chat_history:
-            if msg["role"] == "user":
-                st.markdown(f'<div class="verdict-msg-user">🧑 {msg["content"]}</div>',
-                            unsafe_allow_html=True)
-            else:
-                with st.container():
-                    st.markdown(f"⚖ {msg['content']}")
-
-        if "pending_question" in st.session_state:
-            st.session_state["current_input"] = st.session_state.pop("pending_question")
-
-        user_input = st.text_area(
-            "Ask",
-            value=st.session_state.get("current_input", ""),
-            height=90,
-            label_visibility="collapsed",
-            placeholder="Ask anything about this document in plain English..."
-        )
-        st.session_state["current_input"] = user_input
-
-        ask_btn = st.button("⚖ Ask VerdictAI", type="primary", use_container_width=True)
-
-        if ask_btn and user_input.strip():
-            with st.spinner("Retrieving relevant clauses and generating answer..."):
-                chunks = retrieve(user_input, st.session_state.collection)
-                response = ask_llm(user_input, chunks, st.session_state.chat_history)
-            st.session_state.chat_history.append({"role": "user", "content": user_input})
-            st.session_state.chat_history.append({"role": "assistant", "content": response})
-            st.session_state["current_input"] = ""
-            st.rerun()
-
-        if st.session_state.chat_history:
-            if st.button("Clear conversation", use_container_width=True):
-                st.session_state.chat_history = []
-                st.rerun()
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # ── ANALYSIS ──────────────────────────────────────────────
-    with tab2:
-        st.markdown(f'<div style="{pad}">', unsafe_allow_html=True)
-
-        analyses = {
-            "📋 Plain Summary": "summary",
-            "🚨 Red Flag Detection": "red_flags",
-            "📌 Obligations": "obligations",
-            "✅ Rights & Entitlements": "rights",
-            "📅 Deadlines & Dates": "deadlines",
-            "👥 Party Analysis": "parties",
-            "📊 Risk Score": "risk_score",
-        }
-
-        acols = st.columns(4)
-        selected_analysis = None
-        for i, (label, key) in enumerate(analyses.items()):
-            if acols[i % 4].button(label, key=f"an_{key}", use_container_width=True):
-                selected_analysis = key
-
-        st.markdown("<hr>", unsafe_allow_html=True)
-
-        if selected_analysis:
-            if selected_analysis not in st.session_state.analysis_cache:
-                with st.spinner("Analyzing document..."):
-                    result = analyze_document(st.session_state.doc_text, selected_analysis)
-                    st.session_state.analysis_cache[selected_analysis] = result
-            st.markdown(st.session_state.analysis_cache[selected_analysis])
-            st.markdown("""<div class="verdict-disclaimer">
-                  ⚠ This analysis is generated by AI for informational purposes only.
-                  It does not constitute legal advice. Always consult a qualified attorney.
-                </div>""", unsafe_allow_html=True)
-        else:
-            st.markdown("""<div style="text-align:center; padding:3rem; color:#A09890;
-                            font-family:'DM Mono',monospace; font-size:0.78rem;">
-                            Select an analysis type above to begin</div>""",
-                        unsafe_allow_html=True)
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-    # ── DOCUMENT ──────────────────────────────────────────────
-    with tab4:
-        st.markdown(f'<div style="{pad}">', unsafe_allow_html=True)
-
-        word_count = len(st.session_state.doc_text.split())
-        char_count = len(st.session_state.doc_text)
-        chunks = chunk_text(st.session_state.doc_text)
-
+if document_uploaded:
+    if not st.session_state.doc_text:
         st.markdown(f"""
-            <div style="display:flex; gap:2rem; margin-bottom:1.5rem;">
-              <div style="background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:1rem 1.5rem;">
-                <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:#6B6560;text-transform:uppercase;letter-spacing:0.1em;">Words</div>
-                <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:#C9A84C;">{word_count:,}</div>
-              </div>
-              <div style="background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:1rem 1.5rem;">
-                <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:#6B6560;text-transform:uppercase;letter-spacing:0.1em;">Characters</div>
-                <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:#C9A84C;">{char_count:,}</div>
-              </div>
-              <div style="background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:1rem 1.5rem;">
-                <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:#6B6560;text-transform:uppercase;letter-spacing:0.1em;">Chunks indexed</div>
-                <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:#C9A84C;">{len(chunks)}</div>
-              </div>
+        <div style="{pad}">
+          <div style="max-width:600px; margin:4rem auto; text-align:center;">
+            <div style="font-family:'Playfair Display',serif; font-size:3.5rem; color:#D4CCB8;
+                        margin-bottom:1rem; font-style:italic;">⚖</div>
+            <div style="font-family:'Playfair Display',serif; font-size:1.4rem; color:#6B6560;
+                        margin-bottom:0.8rem;">Upload a legal document to begin</div>
+            <div style="font-family:'DM Mono',monospace; font-size:0.75rem; color:#A09890; line-height:1.8;">
+              Contracts · Legislation · Court filings · NDAs · Terms of service<br>
+              Leases · Employment agreements · Any legal document, any jurisdiction
             </div>
-            """, unsafe_allow_html=True)
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        tab1, tab2, tab4 = st.tabs(["💬 Chat", "🔍 Analysis", "📄 Document"])
+        with tab1:
+            st.markdown(f'<div style="{pad} padding-bottom:0;">', unsafe_allow_html=True)
 
-        st.text_area("Raw text", value=st.session_state.doc_text,
-                     height=400, label_visibility="collapsed")
+            quick_qs = {
+                "Summarize": "What is this document about and what are its main terms?",
+                "My obligations": "What am I required to do under this agreement?",
+                "My rights": "What rights and entitlements do I have under this document?",
+                "Red flags": "Are there any risky or unfavorable clauses I should know about?",
+                "Deadlines": "What are all the important dates and deadlines in this document?",
+                "Plain English": "Explain this entire document in simple plain English.",
+            }
 
-        st.markdown("</div>", unsafe_allow_html=True)
+            qcols = st.columns(len(quick_qs))
+            for i, (label, question) in enumerate(quick_qs.items()):
+                if qcols[i].button(label, key=f"q_{i}", use_container_width=True):
+                    st.session_state["pending_question"] = question
+                    st.rerun()
+
+            st.markdown("<hr>", unsafe_allow_html=True)
+
+            for msg in st.session_state.chat_history:
+                if msg["role"] == "user":
+                    st.markdown(f'<div class="verdict-msg-user">🧑 {msg["content"]}</div>',
+                                unsafe_allow_html=True)
+                else:
+                    with st.container():
+                        st.markdown(f"⚖ {msg['content']}")
+
+            if "pending_question" in st.session_state:
+                st.session_state["current_input"] = st.session_state.pop("pending_question")
+
+            user_input = st.text_area(
+                "Ask",
+                value=st.session_state.get("current_input", ""),
+                height=90,
+                label_visibility="collapsed",
+                placeholder="Ask anything about this document in plain English..."
+            )
+            st.session_state["current_input"] = user_input
+
+            ask_btn = st.button("⚖ Ask VerdictAI", type="primary", use_container_width=True)
+
+            if ask_btn and user_input.strip():
+                with st.spinner("Retrieving relevant clauses and generating answer..."):
+                    chunks = retrieve(user_input, st.session_state.collection)
+                    response = ask_llm(user_input, chunks, st.session_state.chat_history)
+                st.session_state.chat_history.append({"role": "user", "content": user_input})
+                st.session_state.chat_history.append({"role": "assistant", "content": response})
+                st.session_state["current_input"] = ""
+                st.rerun()
+
+            if st.session_state.chat_history:
+                if st.button("Clear conversation", use_container_width=True):
+                    st.session_state.chat_history = []
+                    st.rerun()
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        # ── ANALYSIS ──────────────────────────────────────────────
+        with tab2:
+            st.markdown(f'<div style="{pad}">', unsafe_allow_html=True)
+
+            analyses = {
+                "📋 Plain Summary": "summary",
+                "🚨 Red Flag Detection": "red_flags",
+                "📌 Obligations": "obligations",
+                "✅ Rights & Entitlements": "rights",
+                "📅 Deadlines & Dates": "deadlines",
+                "👥 Party Analysis": "parties",
+                "📊 Risk Score": "risk_score",
+            }
+
+            acols = st.columns(4)
+            selected_analysis = None
+            for i, (label, key) in enumerate(analyses.items()):
+                if acols[i % 4].button(label, key=f"an_{key}", use_container_width=True):
+                    selected_analysis = key
+
+            st.markdown("<hr>", unsafe_allow_html=True)
+
+            if selected_analysis:
+                if selected_analysis not in st.session_state.analysis_cache:
+                    with st.spinner("Analyzing document..."):
+                        result = analyze_document(st.session_state.doc_text, selected_analysis)
+                        st.session_state.analysis_cache[selected_analysis] = result
+                st.markdown(st.session_state.analysis_cache[selected_analysis])
+                st.markdown("""<div class="verdict-disclaimer">
+                      ⚠ This analysis is generated by AI for informational purposes only.
+                      It does not constitute legal advice. Always consult a qualified attorney.
+                    </div>""", unsafe_allow_html=True)
+            else:
+                st.markdown("""<div style="text-align:center; padding:3rem; color:#A09890;
+                                font-family:'DM Mono',monospace; font-size:0.78rem;">
+                                Select an analysis type above to begin</div>""",
+                            unsafe_allow_html=True)
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        # ── DOCUMENT ──────────────────────────────────────────────
+        with tab4:
+            st.markdown(f'<div style="{pad}">', unsafe_allow_html=True)
+
+            word_count = len(st.session_state.doc_text.split())
+            char_count = len(st.session_state.doc_text)
+            chunks = chunk_text(st.session_state.doc_text)
+
+            st.markdown(f"""
+                <div style="display:flex; gap:2rem; margin-bottom:1.5rem;">
+                  <div style="background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:1rem 1.5rem;">
+                    <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:#6B6560;text-transform:uppercase;letter-spacing:0.1em;">Words</div>
+                    <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:#C9A84C;">{word_count:,}</div>
+                  </div>
+                  <div style="background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:1rem 1.5rem;">
+                    <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:#6B6560;text-transform:uppercase;letter-spacing:0.1em;">Characters</div>
+                    <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:#C9A84C;">{char_count:,}</div>
+                  </div>
+                  <div style="background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:1rem 1.5rem;">
+                    <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:#6B6560;text-transform:uppercase;letter-spacing:0.1em;">Chunks indexed</div>
+                    <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:#C9A84C;">{len(chunks)}</div>
+                  </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            st.text_area("Raw text", value=st.session_state.doc_text,
+                         height=400, label_visibility="collapsed")
+
+            st.markdown("</div>", unsafe_allow_html=True)
     
 # ── Upload area — full width ───────────────────────────────────
-document_uploaded=False
+
 if document_uploaded==False:
     st.markdown(f'<div style="{pad} padding-bottom:0.5rem;">', unsafe_allow_html=True)
 
