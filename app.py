@@ -195,18 +195,36 @@ html, body, [data-testid="stAppViewContainer"] {
 [data-testid="stDecoration"] { display: none !important; }
 
 /* ── Sidebar ── */
-[data-testid="stSidebar"] {
+[data-testid="stSidebar"],
+[data-testid="stSidebarContent"],
+section[data-testid="stSidebar"] > div {
   background: var(--ink) !important;
   border-right: 1px solid #1E1E28 !important;
 }
-[data-testid="stSidebar"] label {
+[data-testid="stSidebar"] label,
+[data-testid="stSidebarContent"] label {
   color: #6B6560 !important;
 }
 [data-testid="stSidebar"] p,
 [data-testid="stSidebar"] span,
-[data-testid="stSidebar"] div {
+[data-testid="stSidebar"] div,
+[data-testid="stSidebarContent"] p,
+[data-testid="stSidebarContent"] span,
+[data-testid="stSidebarContent"] div {
   color: #C8C0B0 !important;
   font-family: var(--mono) !important;
+}
+/* File uploader inside sidebar — subtle dark styling */
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"],
+[data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] {
+  background: #1A1A24 !important;
+  border-color: #2E2E3A !important;
+}
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] p,
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] span,
+[data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] p,
+[data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] span {
+  color: #6B6560 !important;
 }
 
 /* ── Main content text ── */
@@ -424,12 +442,8 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#6B6560;
-                text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.6rem;">
-                Upload Document</div>""", unsafe_allow_html=True)
-
-    uploaded = st.file_uploader("Upload legal document", type=["pdf", "txt"],
-                                label_visibility="collapsed")
+    uploaded = st.file_uploader("Upload Document", type=["pdf", "txt"],
+                                label_visibility="visible")
 
     if uploaded:
         if st.button("⚖ Process Document", use_container_width=True, type="primary"):
@@ -461,19 +475,19 @@ with st.sidebar:
     st.markdown("""
     <div style="font-family:'DM Mono',monospace; font-size:0.62rem; line-height:2;">
       <span style="color:#C9A84C;">Model</span><br>
-      <span style="color:#4A4A4A;">Gemini 3 Flash via Ollama</span><br><br>
+      <span style="color:#C8C0B0;">Gemini 3 Flash via Ollama</span><br><br>
       <span style="color:#C9A84C;">Embeddings</span><br>
-      <span style="color:#4A4A4A;">all-MiniLM-L6-v2</span><br><br>
+      <span style="color:#C8C0B0;">all-MiniLM-L6-v2</span><br><br>
       <span style="color:#C9A84C;">Vector Store</span><br>
-      <span style="color:#4A4A4A;">ChromaDB</span><br><br>
+      <span style="color:#C8C0B0;">ChromaDB</span><br><br>
       <span style="color:#C9A84C;">Voice</span><br>
-      <span style="color:#4A4A4A;">Whisper Base</span>
+      <span style="color:#C8C0B0;">Whisper Base</span>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#3A3A3A; line-height:1.7;">
+    <div style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#6B6560; line-height:1.7;">
       VerdictAI provides legal information, not legal advice.
       Always consult a qualified attorney for important legal decisions.
     </div>
