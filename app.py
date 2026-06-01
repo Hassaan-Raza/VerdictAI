@@ -21,6 +21,144 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ── Config ────────────────────────────────────────────────────
+OLLAMA_API_KEY  = st.secrets.get("OLLAMA_API_KEY", os.getenv("OLLAMA_API_KEY", ""))
+CHROMA_HOST     = st.secrets.get("CHROMA_HOST", os.getenv("CHROMA_HOST", "localhost"))
+CHROMA_PORT     = int(st.secrets.get("CHROMA_PORT", os.getenv("CHROMA_PORT", "8000")))
+OLLAMA_MODEL    = st.secrets.get("OLLAMA_MODEL", "gemma4:cloud")
+EMBED_MODEL     = "all-MiniLM-L6-v2"
+
+# ── Clients ───────────────────────────────────────────────────
+@st.cache_resource
+def get_ollama_client():
+    return ollama.Client(
+        host="https://api.ollama.com",
+        headers={"Authorization": f"Bearer {OLLAMA_API_KEY}"}
+    )
+
+@st.cache_resource
+def get_embedder():
+    return SentenceTransformer(EMBED_MODEL)
+
+@st.cache_resource
+def get_chroma():
+    try:
+        client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
+        client.heartbeat()
+        return client
+    except Exception:
+        return chromadb.Client()
+
+@st.cache_resource
+def get_whisper():
+    return faster_whisper.WhisperModel("base", device="cpu", compute_type="int8")
+
+# ── Document processing ───────────────────────────────────────
+def extract_text(file_bytes: bytes, filename: str) -> str:
+    ext = filename.lower().split(".")[-1]
+    if ext == "pdf":
+        doc  = fitz.open(stream=file_bytes, filetype="pdf")
+        text = "\n\n".join(page.get_text() for page in doc)
+        doc.close()
+        return text
+    return file_bytes.decode("utf-8", errors="ignore")
+
+def chunk_text(text: str, chunk_size: int = 800, overlap: int = 150) -> list:
+    words  = text.split()
+    chunks = []
+    i      = 0
+    while i < len(words):
+        chunk = " ".join(words[i:i+chunk_size])
+        chunks.append(chunk)
+        i += chunk_size - overlap
+    return [c for c in chunks if len(c.strip()) > 50]
+
+def index_document(text: str, doc_id: str):
+    embedder   = get_embedder()
+    chroma     = get_chroma()
+    collection = chroma.get_or_create_collection(f"verdict_{doc_id}")
+    chunks     = chunk_text(text)
+    embeddings = embedder.encode(chunks).tolist()
+    ids        = [f"{doc_id}_chunk_{i}" for i in range(len(chunks))]
+    collection.add(documents=chunks, embeddings=embeddings, ids=ids)
+    return collection, chunks
+
+def retrieve(query: str, collection, top_k: int = 5) -> list:
+    embedder = get_embedder()
+    qemb     = embedder.encode([query]).tolist()
+    results  = collection.query(query_embeddings=qemb, n_results=min(top_k, collection.count()))
+    return results["documents"][0] if results["documents"] else []
+
+# ── LLM ───────────────────────────────────────────────────────
+SYSTEM_PROMPT = """You are VerdictAI, a highly knowledgeable legal assistant. You help people understand legal documents in plain English.
+
+Rules:
+- Always cite specific clauses or sections when answering
+- Use plain, accessible language — not legalese
+- Flag any risky or unusual clauses clearly
+- Never give definitive legal advice — always recommend consulting a qualified attorney for important decisions
+- Be globally applicable — do not assume a specific jurisdiction unless the document specifies one
+- Be thorough but concise
+- Structure your answers with clear headings when appropriate"""
+
+def ask_llm(question: str, context_chunks: list, chat_history: list) -> str:
+    client  = get_ollama_client()
+    context = "\n\n---\n\n".join(context_chunks)
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    for msg in chat_history[-6:]:
+        messages.append(msg)
+    messages.append({
+        "role": "user",
+        "content": f"Relevant document excerpts:\n{context}\n\nQuestion: {question}\n\nAnswer in plain English with specific references to the document content above."
+    })
+    response = client.chat(
+        model=OLLAMA_MODEL,
+        messages=messages,
+    )
+    result = response.message.content
+    result = re.sub(r'^#{1,6}\s+', '', result, flags=re.MULTILINE)
+    return result
+
+def analyze_document(text: str, analysis_type: str) -> str:
+    client  = get_ollama_client()
+    prompts = {
+        "summary":      f"Provide a clear plain-English summary of this legal document. Include: document type, parties involved, main purpose, key terms, and important dates/deadlines.\n\nDocument:\n{text[:6000]}",
+        "red_flags":    f"Analyze this legal document and identify ALL potentially risky, unusual, or unfavorable clauses. For each red flag: name the clause, explain the risk in plain English, and rate severity as LOW/MEDIUM/HIGH.\n\nDocument:\n{text[:6000]}",
+        "obligations":  f"Extract ALL obligations and responsibilities from this legal document. List what each party is REQUIRED to do, with clause references.\n\nDocument:\n{text[:6000]}",
+        "rights":       f"Extract ALL rights and entitlements from this legal document. List what each party is ENTITLED to, with clause references.\n\nDocument:\n{text[:6000]}",
+        "deadlines":    f"Extract ALL dates, deadlines, timeframes, and time-sensitive provisions from this legal document. Format as a clear timeline.\n\nDocument:\n{text[:6000]}",
+        "parties":      f"Identify all parties in this legal document. For each party: their name/role, their obligations, their rights, and any special conditions that apply to them.\n\nDocument:\n{text[:6000]}",
+        "risk_score":   f"Analyze this legal document and provide:\n1. An overall RISK SCORE from 1-10 (10 being highest risk)\n2. Risk breakdown by category (Financial, Legal, Operational, Reputational)\n3. Top 3 concerns\n4. Overall recommendation\n\nDocument:\n{text[:6000]}",
+    }
+    response = client.chat(
+        model=OLLAMA_MODEL,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user",   "content": prompts.get(analysis_type, prompts["summary"])}
+        ],
+    )
+    result = response.message.content
+    result = re.sub(r'^#{1,6}\s+', '', result, flags=re.MULTILINE)
+    return result
+
+def transcribe_audio(audio_bytes: bytes) -> str:
+    whisper = get_whisper()
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+        f.write(audio_bytes)
+        tmp_path = f.name
+    segments, _ = whisper.transcribe(tmp_path, beam_size=5)
+    text = " ".join(seg.text for seg in segments).strip()
+    os.unlink(tmp_path)
+    return text
+
+# ── Session state ─────────────────────────────────────────────
+if "doc_text"       not in st.session_state: st.session_state.doc_text       = None
+if "doc_id"         not in st.session_state: st.session_state.doc_id         = None
+if "collection"     not in st.session_state: st.session_state.collection     = None
+if "chat_history"   not in st.session_state: st.session_state.chat_history   = []
+if "doc_text_2"     not in st.session_state: st.session_state.doc_text_2     = None
+if "analysis_cache" not in st.session_state: st.session_state.analysis_cache = {}
+
 # ── CSS ───────────────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -274,144 +412,6 @@ st.markdown("""
   </p>
 </div>
 """, unsafe_allow_html=True)
-
-# ── Config — paste your Ollama API key below ──────────────────
-OLLAMA_API_KEY  = st.secrets.get("OLLAMA_API_KEY", os.getenv("OLLAMA_API_KEY", ""))
-CHROMA_HOST     = st.secrets.get("CHROMA_HOST", os.getenv("CHROMA_HOST", "localhost"))
-CHROMA_PORT     = int(st.secrets.get("CHROMA_PORT", os.getenv("CHROMA_PORT", "8000")))
-OLLAMA_MODEL = st.secrets.get("OLLAMA_MODEL", "gemma4:cloud")
-EMBED_MODEL     = "all-MiniLM-L6-v2"
-
-# ── Clients ───────────────────────────────────────────────────
-@st.cache_resource
-def get_ollama_client():
-    return ollama.Client(
-        host="https://api.ollama.com",
-        headers={"Authorization": f"Bearer {OLLAMA_API_KEY}"}
-    )
-
-@st.cache_resource
-def get_embedder():
-    return SentenceTransformer(EMBED_MODEL)
-
-@st.cache_resource
-def get_chroma():
-    try:
-        client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
-        client.heartbeat()
-        return client
-    except Exception:
-        return chromadb.Client()
-
-@st.cache_resource
-def get_whisper():
-    return faster_whisper.WhisperModel("base", device="cpu", compute_type="int8")
-
-# ── Document processing ───────────────────────────────────────
-def extract_text(file_bytes: bytes, filename: str) -> str:
-    ext = filename.lower().split(".")[-1]
-    if ext == "pdf":
-        doc  = fitz.open(stream=file_bytes, filetype="pdf")
-        text = "\n\n".join(page.get_text() for page in doc)
-        doc.close()
-        return text
-    return file_bytes.decode("utf-8", errors="ignore")
-
-def chunk_text(text: str, chunk_size: int = 800, overlap: int = 150) -> list:
-    words  = text.split()
-    chunks = []
-    i      = 0
-    while i < len(words):
-        chunk = " ".join(words[i:i+chunk_size])
-        chunks.append(chunk)
-        i += chunk_size - overlap
-    return [c for c in chunks if len(c.strip()) > 50]
-
-def index_document(text: str, doc_id: str):
-    embedder   = get_embedder()
-    chroma     = get_chroma()
-    collection = chroma.get_or_create_collection(f"verdict_{doc_id}")
-    chunks     = chunk_text(text)
-    embeddings = embedder.encode(chunks).tolist()
-    ids        = [f"{doc_id}_chunk_{i}" for i in range(len(chunks))]
-    collection.add(documents=chunks, embeddings=embeddings, ids=ids)
-    return collection, chunks
-
-def retrieve(query: str, collection, top_k: int = 5) -> list:
-    embedder = get_embedder()
-    qemb     = embedder.encode([query]).tolist()
-    results  = collection.query(query_embeddings=qemb, n_results=min(top_k, collection.count()))
-    return results["documents"][0] if results["documents"] else []
-
-# ── LLM ───────────────────────────────────────────────────────
-SYSTEM_PROMPT = """You are VerdictAI, a highly knowledgeable legal assistant. You help people understand legal documents in plain English.
-
-Rules:
-- Always cite specific clauses or sections when answering
-- Use plain, accessible language — not legalese
-- Flag any risky or unusual clauses clearly
-- Never give definitive legal advice — always recommend consulting a qualified attorney for important decisions
-- Be globally applicable — do not assume a specific jurisdiction unless the document specifies one
-- Be thorough but concise
-- Structure your answers with clear headings when appropriate"""
-
-def ask_llm(question: str, context_chunks: list, chat_history: list) -> str:
-    client  = get_ollama_client()
-    context = "\n\n---\n\n".join(context_chunks)
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-    for msg in chat_history[-6:]:
-        messages.append(msg)
-    messages.append({
-        "role": "user",
-        "content": f"Relevant document excerpts:\n{context}\n\nQuestion: {question}\n\nAnswer in plain English with specific references to the document content above."
-    })
-    response = client.chat(
-        model=OLLAMA_MODEL,
-        messages=messages,
-    )
-    result = response.message.content
-    result = re.sub(r'^#{1,6}\s+', '', result, flags=re.MULTILINE)
-    return result
-
-def analyze_document(text: str, analysis_type: str) -> str:
-    client  = get_ollama_client()
-    prompts = {
-        "summary":      f"Provide a clear plain-English summary of this legal document. Include: document type, parties involved, main purpose, key terms, and important dates/deadlines.\n\nDocument:\n{text[:6000]}",
-        "red_flags":    f"Analyze this legal document and identify ALL potentially risky, unusual, or unfavorable clauses. For each red flag: name the clause, explain the risk in plain English, and rate severity as LOW/MEDIUM/HIGH.\n\nDocument:\n{text[:6000]}",
-        "obligations":  f"Extract ALL obligations and responsibilities from this legal document. List what each party is REQUIRED to do, with clause references.\n\nDocument:\n{text[:6000]}",
-        "rights":       f"Extract ALL rights and entitlements from this legal document. List what each party is ENTITLED to, with clause references.\n\nDocument:\n{text[:6000]}",
-        "deadlines":    f"Extract ALL dates, deadlines, timeframes, and time-sensitive provisions from this legal document. Format as a clear timeline.\n\nDocument:\n{text[:6000]}",
-        "parties":      f"Identify all parties in this legal document. For each party: their name/role, their obligations, their rights, and any special conditions that apply to them.\n\nDocument:\n{text[:6000]}",
-        "risk_score":   f"Analyze this legal document and provide:\n1. An overall RISK SCORE from 1-10 (10 being highest risk)\n2. Risk breakdown by category (Financial, Legal, Operational, Reputational)\n3. Top 3 concerns\n4. Overall recommendation\n\nDocument:\n{text[:6000]}",
-    }
-    response = client.chat(
-        model=OLLAMA_MODEL,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user",   "content": prompts.get(analysis_type, prompts["summary"])}
-        ],
-    )
-    result = response.message.content
-    result = re.sub(r'^#{1,6}\s+', '', result, flags=re.MULTILINE)
-    return result
-
-def transcribe_audio(audio_bytes: bytes) -> str:
-    whisper = get_whisper()
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-        f.write(audio_bytes)
-        tmp_path = f.name
-    segments, _ = whisper.transcribe(tmp_path, beam_size=5)
-    text = " ".join(seg.text for seg in segments).strip()
-    os.unlink(tmp_path)
-    return text
-
-# ── Session state ─────────────────────────────────────────────
-if "doc_text"       not in st.session_state: st.session_state.doc_text       = None
-if "doc_id"         not in st.session_state: st.session_state.doc_id         = None
-if "collection"     not in st.session_state: st.session_state.collection     = None
-if "chat_history"   not in st.session_state: st.session_state.chat_history   = []
-if "doc_text_2"     not in st.session_state: st.session_state.doc_text_2     = None
-if "analysis_cache" not in st.session_state: st.session_state.analysis_cache = {}
 
 # ── Sidebar ───────────────────────────────────────────────────
 with st.sidebar:
