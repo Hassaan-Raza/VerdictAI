@@ -507,7 +507,7 @@ st.markdown(
 uploaded = st.file_uploader("Upload", type=["pdf", "txt"], label_visibility="collapsed")
 if uploaded:
 
-    st.markdown("<div style='text-align: center;align-items:center;flex-direction:column,justify-content:center'>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center;align-items:center;flex-direction:column,justify-content:center;display:flex;'>", unsafe_allow_html=True)
 
 
     if st.button("⚖ Process Document", type="primary"):
