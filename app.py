@@ -170,56 +170,12 @@ html, body, [data-testid="stAppViewContainer"] {
   border: 1.5px dashed var(--border) !important;
   border-radius: 2px !important;
 }
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] {
-  background: #1A1A24 !important;
-  border: 1.5px dashed #3E3E4A !important;
-}
 [data-testid="stFileUploaderDropzone"]:hover {
   border-color: var(--gold) !important;
 }
 [data-testid="stFileUploaderDropzone"] p,
 [data-testid="stFileUploaderDropzone"] span {
   color: var(--muted) !important;
-}
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] p,
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] span,
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] small {
-  color: #6A6470 !important;
-}
-
-/* ── Fix Streamlit Cloud "uploadupload" duplicate button bug ──
-   Streamlit Cloud injects TWO stFileUploaderDropzoneInstructions nodes.
-   We hide ALL of them, then use a ::before pseudo on the dropzone to
-   show a clean hint. The underlying <input type=file> stays clickable. */
-[data-testid="stFileUploaderDropzoneInstructions"] {
-  display: none !important;
-}
-[data-testid="stFileUploaderDropzone"] {
-  min-height: 72px !important;
-  cursor: pointer !important;
-  position: relative !important;
-}
-[data-testid="stFileUploaderDropzone"]::before {
-  content: "Click or drag to upload";
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  pointer-events: none;
-}
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]::before {
-  color: #6A6470 !important;
-}
-
-/* ── Hide Streamlit's auto-injected sidebar page-title / nav ── */
-[data-testid="stSidebarHeader"],
-[data-testid="stSidebarNav"] {
-  display: none !important;
 }
 
 /* ── Labels ── */
@@ -295,6 +251,11 @@ hr { border-color: var(--border) !important; margin: 1.5rem 0 !important; }
   line-height: 1.8;
   color: var(--ink) !important;
   white-space: pre-wrap;
+}
+/* ── Hide Streamlit's auto-injected sidebar page-title / nav ── */
+[data-testid="stSidebarHeader"],
+[data-testid="stSidebarNav"] {
+  display: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
