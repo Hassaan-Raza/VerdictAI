@@ -487,7 +487,7 @@ if document_uploaded==False:
                     st.session_state.analysis_cache = {}
                 st.success(f"Ready — {len(text):,} characters indexed")
                 time.sleep(5)
-                document_uploaded=true
+                document_uploaded=True
                 st.rerun()
 
 # ── Footer ────────────────────────────────────────────────────
