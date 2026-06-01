@@ -486,12 +486,11 @@ else:
     
 # ── Upload area — full width ───────────────────────────────────
 
-
 st.markdown(f'<div style="{pad} padding-bottom:0.5rem;">', unsafe_allow_html=True)
 
 st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
             color:#6B6560; text-transform:uppercase; letter-spacing:0.1em;
-            margin-bottom:0.5rem;">Upload Document</div>""", unsafe_allow_html=True)
+            margin-bottom:0.5rem;text-align: center;">Upload Document</div>""", unsafe_allow_html=True)
 
 uploaded = st.file_uploader("Upload", type=["pdf", "txt"], label_visibility="collapsed")
 if uploaded:
