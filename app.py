@@ -252,11 +252,6 @@ hr { border-color: var(--border) !important; margin: 1.5rem 0 !important; }
   color: var(--ink) !important;
   white-space: pre-wrap;
 }
-/* ── Hide Streamlit's auto-injected sidebar page-title / nav ── */
-[data-testid="stSidebarHeader"],
-[data-testid="stSidebarNav"] {
-  display: none !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
