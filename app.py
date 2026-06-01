@@ -299,7 +299,25 @@ if st.session_state.show_info:
     """, unsafe_allow_html=True)
 
 st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
-
+# ── Main content ──────────────────────────────────────────────
+if not st.session_state.doc_text:
+    st.markdown(f"""
+    <div style="{pad}">
+      <div style="max-width:600px; margin:4rem auto; text-align:center;">
+        <div style="font-family:'Playfair Display',serif; font-size:3.5rem; color:#D4CCB8;
+                    margin-bottom:1rem; font-style:italic;">⚖</div>
+        <div style="font-family:'Playfair Display',serif; font-size:1.4rem; color:#6B6560;
+                    margin-bottom:0.8rem;">Upload a legal document to begin</div>
+        <div style="font-family:'DM Mono',monospace; font-size:0.75rem; color:#A09890; line-height:1.8;">
+          Contracts · Legislation · Court filings · NDAs · Terms of service<br>
+          Leases · Employment agreements · Any legal document, any jurisdiction
+        </div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    tab1, tab2, tab3, tab4 = st.tabs(["💬 Chat", "🔍 Analysis", "📊 Compare", "📄 Document"])
+    
 # ── Upload area — full width ───────────────────────────────────
 pad = "padding: 1.5rem 3rem;"
 
@@ -340,24 +358,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
 st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
 
-# ── Main content ──────────────────────────────────────────────
-if not st.session_state.doc_text:
-    st.markdown(f"""
-    <div style="{pad}">
-      <div style="max-width:600px; margin:4rem auto; text-align:center;">
-        <div style="font-family:'Playfair Display',serif; font-size:3.5rem; color:#D4CCB8;
-                    margin-bottom:1rem; font-style:italic;">⚖</div>
-        <div style="font-family:'Playfair Display',serif; font-size:1.4rem; color:#6B6560;
-                    margin-bottom:0.8rem;">Upload a legal document to begin</div>
-        <div style="font-family:'DM Mono',monospace; font-size:0.75rem; color:#A09890; line-height:1.8;">
-          Contracts · Legislation · Court filings · NDAs · Terms of service<br>
-          Leases · Employment agreements · Any legal document, any jurisdiction
-        </div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-else:
-    tab1, tab2, tab3, tab4 = st.tabs(["💬 Chat", "🔍 Analysis", "📊 Compare", "📄 Document"])
+
 
     # ── CHAT ──────────────────────────────────────────────────
     with tab1:
