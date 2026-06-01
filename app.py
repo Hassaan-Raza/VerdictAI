@@ -455,7 +455,12 @@ if not st.session_state.document_uploaded:
 
 # ── Footer ────────────────────────────────────────────────────
 st.markdown("""
-<div style="color:red;font-size:40px;">
-TEST
+<div style="
+padding:20px;
+background:red;
+color:white;
+font-size:24px;
+">
+FOOTER TEST
 </div>
 """, unsafe_allow_html=True)
