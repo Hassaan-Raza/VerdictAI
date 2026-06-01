@@ -163,6 +163,8 @@ if "analysis_cache" not in st.session_state: st.session_state.analysis_cache = {
 st.markdown("""
 <style>
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
 :root {
   --ink:      #0A0A0F;
   --paper:    #F5F0E8;
@@ -213,17 +215,24 @@ section[data-testid="stSidebar"] > div {
   font-family: var(--mono) !important;
 }
 
-/* ── File uploader (sidebar + main) ── */
-[data-testid="stFileUploaderDropzone"] {
+/* ── File uploader — sidebar (dark) ── */
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] {
   background: #1A1A24 !important;
-  border-color: #2E2E3A !important;
+  border: 1.5px dashed #3E3E4A !important;
+  border-radius: 2px !important;
 }
-/* Hide the duplicate instructions text that causes "uploadupload" */
-[data-testid="stFileUploaderDropzoneInstructions"] {
-  display: none !important;
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]:hover {
+  border-color: var(--gold) !important;
 }
-/* Browse files button */
-[data-testid="stFileUploaderDropzone"] button {
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] p,
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] span,
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] small {
+  color: #A09890 !important;
+  font-family: var(--mono) !important;
+  font-size: 0.72rem !important;
+}
+/* Browse files button — sidebar */
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button {
   background: #2E2E3A !important;
   border: 1px solid #3E3E4A !important;
   border-radius: 2px !important;
@@ -231,10 +240,27 @@ section[data-testid="stSidebar"] > div {
   font-size: 0.72rem !important;
   letter-spacing: 0.08em !important;
 }
-[data-testid="stFileUploaderDropzone"] button p,
-[data-testid="stFileUploaderDropzone"] button span {
-  color: #C9A84C !important;
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button p,
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button span {
+  color: var(--gold) !important;
   font-family: var(--mono) !important;
+}
+
+/* Fix "uploadupload" duplicate text — hide the extra instructions span */
+[data-testid="stFileUploaderDropzoneInstructions"] > div > span:last-child,
+[data-testid="stFileUploaderDropzoneInstructions"] > div > small {
+  display: none !important;
+}
+[data-testid="stFileUploaderDropzoneInstructions"] > div {
+  display: flex !important;
+  flex-direction: column !important;
+}
+/* Show only the button label, hide raw text nodes rendered as spans */
+[data-testid="stFileUploaderDropzoneInstructions"] span {
+  display: none !important;
+}
+[data-testid="stFileUploaderDropzoneInstructions"] button span {
+  display: inline !important;
 }
 
 /* ── Main content text ── */
@@ -329,17 +355,17 @@ section[data-testid="stSidebar"] > div {
 }
 .stTextArea textarea::placeholder { color: #A09890 !important; }
 
-/* ── File uploader ── */
-[data-testid="stFileUploaderDropzone"] {
+/* ── File uploader — main area (light) ── */
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] {
   background: var(--cream) !important;
   border: 1.5px dashed var(--border) !important;
   border-radius: 2px !important;
 }
-[data-testid="stFileUploaderDropzone"]:hover {
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"]:hover {
   border-color: var(--gold) !important;
 }
-[data-testid="stFileUploaderDropzone"] p,
-[data-testid="stFileUploaderDropzone"] span {
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] p,
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] span {
   color: var(--muted) !important;
 }
 
