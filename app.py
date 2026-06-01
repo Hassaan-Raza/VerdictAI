@@ -260,45 +260,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Info toggle button — rendered right after header
-info_col, _ = st.columns([1, 8])
-with info_col:
-    if st.button("ℹ️ About", use_container_width=True):
-        st.session_state.show_info = not st.session_state.show_info
-        st.rerun()
-
-# Inline info panel
-if st.session_state.show_info:
-    st.markdown("""
-    <div style="margin:0 3rem 1rem; padding:1.5rem 2rem;
-                background:#0A0A0F; border-radius:4px;
-                display:flex; gap:4rem;">
-      <div style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#C8C0B0; line-height:1.9;">
-        <span style="color:#C9A84C; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em;">About</span><br>
-        VerdictAI reads any legal document and answers your<br>
-        questions in plain English. No legalese. No guesswork.
-      </div>
-      <div style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#C8C0B0; line-height:1.9;">
-        <span style="color:#C9A84C; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em;">Supported</span><br>
-        Contracts · NDAs · Leases<br>
-        Employment agreements · TOS<br>
-        Court filings · Any jurisdiction
-      </div>
-      <div style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#C8C0B0; line-height:1.9;">
-        <span style="color:#C9A84C; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em;">Powered by</span><br>
-        Ollama Cloud · ChromaDB<br>
-        HuggingFace Embeddings<br>
-        RAG Pipeline · Whisper
-      </div>
-      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; color:#556070; line-height:1.7; max-width:220px;">
-        <span style="color:#C9A84C; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em;">Disclaimer</span><br>
-        VerdictAI provides legal information, not legal advice.
-        Always consult a qualified attorney for important decisions.
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
 # ── Main content ──────────────────────────────────────────────
 if "document_uploaded" not in st.session_state:
     st.session_state.document_uploaded = False
@@ -494,13 +455,124 @@ if not st.session_state.document_uploaded:
 
 # ── Footer ────────────────────────────────────────────────────
 st.markdown("""
-<div style="padding:1rem 3rem; border-top:1px solid #D4CCB8; margin-top:2rem;
-            display:flex; justify-content:space-between; align-items:center;">
-  <span style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#A09890;">
-    VerdictAI · Legal Intelligence · Globally applicable
-  </span>
-  <span style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#A09890;">
-    Not legal advice · Consult a qualified attorney for important decisions
-  </span>
+<div style="
+    padding:1.5rem 3rem;
+    border-top:1px solid #D4CCB8;
+    margin-top:2rem;
+    background:var(--cream);
+">
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:3rem;
+        margin-bottom:1rem;
+    ">
+        <span style="
+            font-family:'DM Mono',monospace;
+            font-size:0.68rem;
+            color:#4A433D;
+        ">
+            VerdictAI · Legal Intelligence · Globally applicable
+        </span>
+
+        <span style="
+            font-family:'DM Mono',monospace;
+            font-size:0.68rem;
+            color:#4A433D;
+            text-align:right;
+        ">
+            Not legal advice · Consult a qualified attorney for important decisions
+        </span>
+    </div>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:2rem;
+        padding-top:1rem;
+        border-top:1px solid #D4CCB8;
+    ">
+
+        <div style="
+            font-family:'DM Mono',monospace;
+            font-size:0.68rem;
+            color:#5A534D;
+            line-height:1.8;
+        ">
+            <span style="
+                color:#C9A84C;
+                font-size:0.62rem;
+                text-transform:uppercase;
+                letter-spacing:0.1em;
+            ">
+                About
+            </span><br>
+            VerdictAI analyzes legal documents and
+            answers questions in plain English with
+            clause-aware retrieval and AI-assisted
+            explanations.
+        </div>
+
+        <div style="
+            font-family:'DM Mono',monospace;
+            font-size:0.68rem;
+            color:#5A534D;
+            line-height:1.8;
+        ">
+            <span style="
+                color:#C9A84C;
+                font-size:0.62rem;
+                text-transform:uppercase;
+                letter-spacing:0.1em;
+            ">
+                Supported
+            </span><br>
+            Contracts · NDAs · Leases<br>
+            Employment agreements<br>
+            Terms of service · Court filings
+        </div>
+
+        <div style="
+            font-family:'DM Mono',monospace;
+            font-size:0.68rem;
+            color:#5A534D;
+            line-height:1.8;
+        ">
+            <span style="
+                color:#C9A84C;
+                font-size:0.62rem;
+                text-transform:uppercase;
+                letter-spacing:0.1em;
+            ">
+                Powered By
+            </span><br>
+            Ollama Cloud · ChromaDB<br>
+            HuggingFace Embeddings<br>
+            RAG Pipeline · Whisper
+        </div>
+
+        <div style="
+            font-family:'DM Mono',monospace;
+            font-size:0.68rem;
+            color:#5A534D;
+            line-height:1.8;
+        ">
+            <span style="
+                color:#C9A84C;
+                font-size:0.62rem;
+                text-transform:uppercase;
+                letter-spacing:0.1em;
+            ">
+                Disclaimer
+            </span><br>
+            AI-generated legal information only.
+            Review important matters with a
+            qualified legal professional before
+            making decisions.
+        </div>
+
+    </div>
 </div>
 """, unsafe_allow_html=True)
