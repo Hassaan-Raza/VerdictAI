@@ -21,10 +21,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ── Google Fonts via link tag (works on Streamlit Cloud) ─────
+st.markdown("""
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+""", unsafe_allow_html=True)
+
 # ── CSS ───────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
   --ink:      #0A0A0F;
@@ -251,6 +257,18 @@ hr { border-color: var(--border) !important; margin: 1.5rem 0 !important; }
   line-height: 1.8;
   color: var(--ink) !important;
   white-space: pre-wrap;
+}
+/* ── Always show sidebar toggle button ── */
+[data-testid="collapsedControl"] {
+  display: flex !important;
+  background: var(--ink) !important;
+  color: var(--gold) !important;
+  border-right: 1px solid #1E1E28 !important;
+}
+section[data-testid="stSidebar"][aria-expanded="false"] {
+  display: block !important;
+  min-width: 0 !important;
+  width: 0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
