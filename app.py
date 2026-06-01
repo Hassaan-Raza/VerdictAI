@@ -498,7 +498,7 @@ st.markdown(
         align-items: center;
         flex-direction: column;
         justify-content: center;
-        display:flex;
+    
     }
     </style>
     """,
