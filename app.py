@@ -21,11 +21,310 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── Config ────────────────────────────────────────────────────
-OLLAMA_API_KEY  = st.secrets.get("OLLAMA_API_KEY", os.getenv("OLLAMA_API_KEY", ""))
-CHROMA_HOST     = st.secrets.get("CHROMA_HOST", os.getenv("CHROMA_HOST", "localhost"))
-CHROMA_PORT     = int(st.secrets.get("CHROMA_PORT", os.getenv("CHROMA_PORT", "8000")))
-OLLAMA_MODEL    = st.secrets.get("OLLAMA_MODEL", "gemma4:cloud")
+# ── CSS ───────────────────────────────────────────────────────
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --ink:      #0A0A0F;
+  --paper:    #F5F0E8;
+  --cream:    #EDE8DC;
+  --gold:     #C9A84C;
+  --gold2:    #E8C96A;
+  --red:      #8B1A1A;
+  --muted:    #6B6560;
+  --border:   #D4CCB8;
+  --mono:     'DM Mono', monospace;
+  --serif:    'Playfair Display', serif;
+  --sans:     'DM Sans', sans-serif;
+}
+
+html, body, [data-testid="stAppViewContainer"] {
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  font-family: var(--sans) !important;
+}
+
+[data-testid="stAppViewContainer"] {
+  background:
+    radial-gradient(ellipse 60% 40% at 100% 0%, #C9A84C12 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 0% 100%, #8B1A1A08 0%, transparent 50%),
+    var(--paper) !important;
+}
+
+#MainMenu, footer, header,
+[data-testid="stToolbar"],
+[data-testid="stDecoration"] { display: none !important; }
+
+/* ── Sidebar ── */
+[data-testid="stSidebar"] {
+  background: var(--ink) !important;
+  border-right: 1px solid #1E1E28 !important;
+}
+[data-testid="stSidebar"] label {
+  color: #6B6560 !important;
+}
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] div {
+  color: #C8C0B0 !important;
+  font-family: var(--mono) !important;
+}
+
+/* ── Main content text ── */
+[data-testid="stMain"] p,
+[data-testid="stMain"] span,
+[data-testid="stMain"] li,
+[data-testid="stMain"] div,
+[data-testid="stMarkdownContainer"],
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] span {
+  color: var(--ink) !important;
+  font-family: var(--sans) !important;
+}
+
+.block-container { padding: 0 !important; max-width: 100% !important; }
+
+/* ── Tabs ── */
+.stTabs [data-baseweb="tab-list"] {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+.stTabs [data-baseweb="tab"] {
+  background: transparent !important;
+  color: var(--muted) !important;
+  font-family: var(--mono) !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.08em !important;
+}
+.stTabs [data-baseweb="tab"]:hover {
+  color: var(--ink) !important;
+}
+.stTabs [aria-selected="true"] {
+  color: var(--ink) !important;
+  border-bottom: 2px solid var(--gold) !important;
+}
+.stTabs [data-baseweb="tab"] p,
+.stTabs [data-baseweb="tab"] span {
+  color: inherit !important;
+}
+
+/* ── Buttons ── */
+.stButton > button {
+  background: var(--ink) !important;
+  color: var(--gold) !important;
+  border: 1px solid var(--gold) !important;
+  font-family: var(--mono) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  border-radius: 2px !important;
+  padding: 0.5rem 1.2rem !important;
+  transition: all 0.2s !important;
+}
+.stButton > button p,
+.stButton > button span {
+  color: var(--gold) !important;
+  font-family: var(--mono) !important;
+}
+.stButton > button:hover {
+  background: var(--gold) !important;
+  color: var(--ink) !important;
+}
+.stButton > button:hover p,
+.stButton > button:hover span {
+  color: var(--ink) !important;
+}
+
+/* Primary button */
+[data-testid="baseButton-primary"] > button {
+  background: var(--gold) !important;
+  color: var(--ink) !important;
+  font-weight: 600 !important;
+  border-color: var(--gold) !important;
+}
+[data-testid="baseButton-primary"] > button p,
+[data-testid="baseButton-primary"] > button span {
+  color: var(--ink) !important;
+}
+
+/* ── Text area ── */
+.stTextArea textarea {
+  background: var(--cream) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 2px !important;
+  font-family: var(--sans) !important;
+  font-size: 0.9rem !important;
+  color: var(--ink) !important;
+}
+.stTextArea textarea:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 2px #C9A84C20 !important;
+}
+.stTextArea textarea::placeholder { color: #A09890 !important; }
+
+/* ── File uploader ── */
+[data-testid="stFileUploaderDropzone"] {
+  background: var(--cream) !important;
+  border: 1.5px dashed var(--border) !important;
+  border-radius: 2px !important;
+}
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] {
+  background: #1A1A24 !important;
+  border: 1.5px dashed #3E3E4A !important;
+}
+[data-testid="stFileUploaderDropzone"]:hover {
+  border-color: var(--gold) !important;
+}
+[data-testid="stFileUploaderDropzone"] p,
+[data-testid="stFileUploaderDropzone"] span {
+  color: var(--muted) !important;
+}
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] p,
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] span,
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] small {
+  color: #6A6470 !important;
+}
+
+/* ── Fix Streamlit Cloud "uploadupload" duplicate button bug ──
+   Streamlit Cloud injects TWO stFileUploaderDropzoneInstructions nodes.
+   We hide ALL of them, then use a ::before pseudo on the dropzone to
+   show a clean hint. The underlying <input type=file> stays clickable. */
+[data-testid="stFileUploaderDropzoneInstructions"] {
+  display: none !important;
+}
+[data-testid="stFileUploaderDropzone"] {
+  min-height: 72px !important;
+  cursor: pointer !important;
+  position: relative !important;
+}
+[data-testid="stFileUploaderDropzone"]::before {
+  content: "Click or drag to upload";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  pointer-events: none;
+}
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]::before {
+  color: #6A6470 !important;
+}
+
+/* ── Hide Streamlit's auto-injected sidebar page-title / nav ── */
+[data-testid="stSidebarHeader"],
+[data-testid="stSidebarNav"] {
+  display: none !important;
+}
+
+/* ── Labels ── */
+label {
+  font-family: var(--mono) !important;
+  font-size: 0.68rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  color: var(--muted) !important;
+}
+
+/* ── Selectbox ── */
+.stSelectbox div[data-baseweb="select"] > div {
+  background: var(--cream) !important;
+  border-color: var(--border) !important;
+  font-family: var(--sans) !important;
+  border-radius: 2px !important;
+  color: var(--ink) !important;
+}
+
+/* ── Success / info boxes ── */
+[data-testid="stAlert"] p { color: inherit !important; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+hr { border-color: var(--border) !important; margin: 1.5rem 0 !important; }
+
+/* ── Chat messages ── */
+.verdict-msg-user {
+  background: var(--ink);
+  color: var(--paper) !important;
+  border-radius: 2px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  border-left: 3px solid var(--gold);
+}
+.verdict-msg-ai {
+  background: var(--cream);
+  color: var(--ink) !important;
+  border-radius: 2px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  border-left: 3px solid var(--red);
+  white-space: pre-wrap;
+}
+.verdict-disclaimer {
+  background: #8B1A1A10;
+  border: 1px solid #8B1A1A30;
+  border-radius: 2px;
+  padding: 0.7rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--red) !important;
+  line-height: 1.6;
+  margin-top: 1rem;
+}
+.verdict-result {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 1.5rem 2rem;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: var(--ink) !important;
+  white-space: pre-wrap;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ── Header ────────────────────────────────────────────────────
+st.markdown("""
+<div style="padding: 2rem 3rem 1rem; border-bottom: 1px solid #D4CCB8;">
+  <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:0.3rem;">
+    <span style="font-family:'Playfair Display',serif; font-size:2.6rem; font-weight:700;
+                 color:#0A0A0F; letter-spacing:-0.02em; line-height:1;">
+      Verdict<span style="color:#C9A84C; font-style:italic;">AI</span>
+    </span>
+    <span style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#6B6560;
+                 letter-spacing:0.15em; text-transform:uppercase;
+                 border:1px solid #D4CCB8; padding:2px 8px; border-radius:2px;">
+      Legal Intelligence
+    </span>
+  </div>
+  <p style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#6B6560;
+            margin:0; letter-spacing:0.04em;">
+    Upload any legal document · Ask questions in plain English · Get cited answers · Globally applicable
+  </p>
+</div>
+""", unsafe_allow_html=True)
+
+# ── Config — paste your Ollama API key below ──────────────────
+OLLAMA_API_KEY  = "30e05816dd89460f9281057d786d25fe.E6H3Ni8qsL8MX2EZuuP_Gn9M"
+CHROMA_HOST     = os.getenv("CHROMA_HOST", "localhost")
+CHROMA_PORT     = int(os.getenv("CHROMA_PORT", "8000"))
+OLLAMA_MODEL = "gemma4:31b-cloud"
 EMBED_MODEL     = "all-MiniLM-L6-v2"
 
 # ── Clients ───────────────────────────────────────────────────
@@ -159,359 +458,22 @@ if "chat_history"   not in st.session_state: st.session_state.chat_history   = [
 if "doc_text_2"     not in st.session_state: st.session_state.doc_text_2     = None
 if "analysis_cache" not in st.session_state: st.session_state.analysis_cache = {}
 
-# ── CSS ───────────────────────────────────────────────────────
-st.markdown("""
-<style>
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-:root {
-  --ink:      #0A0A0F;
-  --paper:    #F5F0E8;
-  --cream:    #EDE8DC;
-  --gold:     #C9A84C;
-  --gold2:    #E8C96A;
-  --red:      #8B1A1A;
-  --muted:    #6B6560;
-  --border:   #D4CCB8;
-  --mono:     'DM Mono', monospace;
-  --serif:    'Playfair Display', serif;
-  --sans:     'DM Sans', sans-serif;
-}
-
-html, body, [data-testid="stAppViewContainer"] {
-  background: var(--paper) !important;
-  color: var(--ink) !important;
-  font-family: var(--sans) !important;
-}
-
-[data-testid="stAppViewContainer"] {
-  background:
-    radial-gradient(ellipse 60% 40% at 100% 0%, #C9A84C12 0%, transparent 60%),
-    radial-gradient(ellipse 40% 30% at 0% 100%, #8B1A1A08 0%, transparent 50%),
-    var(--paper) !important;
-}
-
-#MainMenu, footer, header,
-[data-testid="stToolbar"],
-[data-testid="stDecoration"] { display: none !important; }
-
-/* ── Sidebar ── */
-[data-testid="stSidebar"],
-[data-testid="stSidebarContent"],
-section[data-testid="stSidebar"] > div {
-  background: var(--ink) !important;
-  border-right: 1px solid #1E1E28 !important;
-}
-[data-testid="stSidebar"] label,
-[data-testid="stSidebarContent"] label {
-  color: #A09890 !important;
-  font-family: var(--mono) !important;
-}
-[data-testid="stSidebar"] p,
-[data-testid="stSidebarContent"] p {
-  color: #C8C0B0 !important;
-  font-family: var(--mono) !important;
-}
-/* Sidebar spans: default muted, but let inline styles (gold titles) win */
-[data-testid="stSidebar"] span:not([style]),
-[data-testid="stSidebarContent"] span:not([style]) {
-  color: #C8C0B0 !important;
-  font-family: var(--mono) !important;
-}
-
-/* Hide the material icon "keyboard_double_" that Streamlit renders for ⚖ */
-[data-testid="stSidebar"] [data-testid="stAppViewBlockContainer"] > div:first-child,
-header [data-testid="stAppName"] .material-symbols-rounded,
-[data-testid="stSidebarHeader"] .material-symbols-rounded,
-[data-testid="stSidebarHeader"] span[class*="material"] {
-  display: none !important;
-}
-/* Hide Streamlit's auto-generated sidebar page-title block and nav entirely */
-[data-testid="stSidebarHeader"],
-[data-testid="stSidebarNav"] {
-  display: none !important;
-}
-
-/* ── File uploader — sidebar (dark) ── */
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] {
-  background: #1A1A24 !important;
-  border: 1.5px dashed #3E3E4A !important;
-  border-radius: 2px !important;
-}
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]:hover {
-  border-color: var(--gold) !important;
-}
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] p,
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] span,
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] small {
-  color: #A09890 !important;
-  font-family: var(--mono) !important;
-  font-size: 0.72rem !important;
-}
-/* Browse files button — sidebar */
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button {
-  background: #2E2E3A !important;
-  border: 1px solid #3E3E4A !important;
-  border-radius: 2px !important;
-  font-family: var(--mono) !important;
-  font-size: 0.72rem !important;
-  letter-spacing: 0.08em !important;
-}
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button p,
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button span {
-  color: var(--gold) !important;
-  font-family: var(--mono) !important;
-}
-
-/* Fix "uploadupload" / "uploa@pload" duplicate text bug.
-   The cleanest fix: hide the entire instructions section (which contains
-   the duplicate text AND the glitching button), then style the dropzone
-   itself to look like a clean upload area with a pseudo-element label.
-   The dropzone zone remains fully clickable for file selection. */
-[data-testid="stFileUploaderDropzoneInstructions"] {
-  display: none !important;
-}
-/* Make the dropzone show a clean "Click to upload" hint via its own padding */
-[data-testid="stFileUploaderDropzone"] {
-  min-height: 80px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  position: relative !important;
-}
-[data-testid="stFileUploaderDropzone"]::after {
-  content: "Click or drag file here";
-  font-family: 'DM Mono', monospace !important;
-  font-size: 0.7rem !important;
-  letter-spacing: 0.08em !important;
-  pointer-events: none;
-}
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]::after {
-  color: #6A6470 !important;
-}
-[data-testid="stMain"] [data-testid="stFileUploaderDropzone"]::after {
-  color: var(--muted) !important;
-}
-
-/* ── Main content text ── */
-[data-testid="stMain"] p,
-[data-testid="stMain"] span,
-[data-testid="stMain"] li,
-[data-testid="stMain"] div,
-[data-testid="stMarkdownContainer"],
-[data-testid="stMarkdownContainer"] p,
-[data-testid="stMarkdownContainer"] span {
-  color: var(--ink) !important;
-  font-family: var(--sans) !important;
-}
-
-.block-container { padding: 0 !important; max-width: 100% !important; }
-
-/* ── Tabs ── */
-.stTabs [data-baseweb="tab-list"] {
-  background: transparent !important;
-  border-bottom: 1px solid var(--border) !important;
-}
-.stTabs [data-baseweb="tab"] {
-  background: transparent !important;
-  color: var(--muted) !important;
-  font-family: var(--mono) !important;
-  font-size: 0.75rem !important;
-  letter-spacing: 0.08em !important;
-}
-.stTabs [data-baseweb="tab"]:hover {
-  color: var(--ink) !important;
-}
-.stTabs [aria-selected="true"] {
-  color: var(--ink) !important;
-  border-bottom: 2px solid var(--gold) !important;
-}
-.stTabs [data-baseweb="tab"] p,
-.stTabs [data-baseweb="tab"] span {
-  color: inherit !important;
-}
-
-/* ── Buttons ── */
-.stButton > button {
-  background: var(--ink) !important;
-  color: var(--gold) !important;
-  border: 1px solid var(--gold) !important;
-  font-family: var(--mono) !important;
-  font-size: 0.72rem !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
-  border-radius: 2px !important;
-  padding: 0.5rem 1.2rem !important;
-  transition: all 0.2s !important;
-}
-.stButton > button p,
-.stButton > button span {
-  color: var(--gold) !important;
-  font-family: var(--mono) !important;
-}
-.stButton > button:hover {
-  background: var(--gold) !important;
-  color: var(--ink) !important;
-}
-.stButton > button:hover p,
-.stButton > button:hover span {
-  color: var(--ink) !important;
-}
-
-/* Primary button */
-[data-testid="baseButton-primary"] > button {
-  background: var(--gold) !important;
-  color: var(--ink) !important;
-  font-weight: 600 !important;
-  border-color: var(--gold) !important;
-}
-[data-testid="baseButton-primary"] > button p,
-[data-testid="baseButton-primary"] > button span {
-  color: var(--ink) !important;
-}
-
-/* ── Text area ── */
-.stTextArea textarea {
-  background: var(--cream) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: 2px !important;
-  font-family: var(--sans) !important;
-  font-size: 0.9rem !important;
-  color: var(--ink) !important;
-}
-.stTextArea textarea:focus {
-  border-color: var(--gold) !important;
-  box-shadow: 0 0 0 2px #C9A84C20 !important;
-}
-.stTextArea textarea::placeholder { color: #A09890 !important; }
-
-/* ── File uploader — main area (light) ── */
-[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] {
-  background: var(--cream) !important;
-  border: 1.5px dashed var(--border) !important;
-  border-radius: 2px !important;
-}
-[data-testid="stMain"] [data-testid="stFileUploaderDropzone"]:hover {
-  border-color: var(--gold) !important;
-}
-[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] p,
-[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] span {
-  color: var(--muted) !important;
-}
-
-/* ── Labels ── */
-label {
-  font-family: var(--mono) !important;
-  font-size: 0.68rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.1em !important;
-  color: var(--muted) !important;
-}
-
-/* ── Selectbox ── */
-.stSelectbox div[data-baseweb="select"] > div {
-  background: var(--cream) !important;
-  border-color: var(--border) !important;
-  font-family: var(--sans) !important;
-  border-radius: 2px !important;
-  color: var(--ink) !important;
-}
-
-/* ── Success / info boxes ── */
-[data-testid="stAlert"] p { color: inherit !important; }
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--paper); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-hr { border-color: var(--border) !important; margin: 1.5rem 0 !important; }
-
-/* ── Chat messages ── */
-.verdict-msg-user {
-  background: var(--ink);
-  color: var(--paper) !important;
-  border-radius: 2px;
-  padding: 1rem 1.2rem;
-  margin-bottom: 0.8rem;
-  font-family: var(--sans);
-  font-size: 0.9rem;
-  line-height: 1.6;
-  border-left: 3px solid var(--gold);
-}
-.verdict-msg-ai {
-  background: var(--cream);
-  color: var(--ink) !important;
-  border-radius: 2px;
-  padding: 1rem 1.2rem;
-  margin-bottom: 0.8rem;
-  font-family: var(--sans);
-  font-size: 0.9rem;
-  line-height: 1.7;
-  border-left: 3px solid var(--red);
-  white-space: pre-wrap;
-}
-.verdict-disclaimer {
-  background: #8B1A1A10;
-  border: 1px solid #8B1A1A30;
-  border-radius: 2px;
-  padding: 0.7rem 1rem;
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  color: var(--red) !important;
-  line-height: 1.6;
-  margin-top: 1rem;
-}
-.verdict-result {
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 1.5rem 2rem;
-  font-family: var(--sans);
-  font-size: 0.9rem;
-  line-height: 1.8;
-  color: var(--ink) !important;
-  white-space: pre-wrap;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ── Header ────────────────────────────────────────────────────
-st.markdown("""
-<div style="padding: 2rem 3rem 1rem; border-bottom: 1px solid #D4CCB8;">
-  <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:0.3rem;">
-    <span style="font-family:'Playfair Display',serif; font-size:2.6rem; font-weight:700;
-                 color:#0A0A0F; letter-spacing:-0.02em; line-height:1;">
-      Verdict<span style="color:#C9A84C; font-style:italic;">AI</span>
-    </span>
-    <span style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#6B6560;
-                 letter-spacing:0.15em; text-transform:uppercase;
-                 border:1px solid #D4CCB8; padding:2px 8px; border-radius:2px;">
-      Legal Intelligence
-    </span>
-  </div>
-  <p style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#6B6560;
-            margin:0; letter-spacing:0.04em;">
-    Upload any legal document · Ask questions in plain English · Get cited answers · Globally applicable
-  </p>
-</div>
-""", unsafe_allow_html=True)
-
 # ── Sidebar ───────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
     <div style="padding:1rem 0 1.5rem;">
       <div style="font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:600;
                   color:#C9A84C; margin-bottom:0.25rem;">VerdictAI</div>
-      <div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#A09890;
+      <div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#6B6560;
                   text-transform:uppercase; letter-spacing:0.1em;">Legal Intelligence Suite</div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div style="font-family:DM Mono,monospace;font-size:0.62rem;color:#A09890;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;">Upload Document</div>', unsafe_allow_html=True)
-    uploaded = st.file_uploader("Upload Document", type=["pdf", "txt"],
+    st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#6B6560;
+                text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.6rem;">
+                Upload Document</div>""", unsafe_allow_html=True)
+
+    uploaded = st.file_uploader("Upload legal document", type=["pdf", "txt"],
                                 label_visibility="collapsed")
 
     if uploaded:
@@ -530,7 +492,7 @@ with st.sidebar:
 
     if st.session_state.doc_text:
         st.markdown("<hr>", unsafe_allow_html=True)
-        st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#A09890;
+        st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#6B6560;
                     text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.6rem;">
                     Compare Documents</div>""", unsafe_allow_html=True)
         uploaded_2 = st.file_uploader("Second document", type=["pdf", "txt"],
@@ -544,19 +506,19 @@ with st.sidebar:
     st.markdown("""
     <div style="font-family:'DM Mono',monospace; font-size:0.62rem; line-height:2;">
       <span style="color:#C9A84C;">Model</span><br>
-      <span style="color:#C8C0B0;">Gemini 3 Flash via Ollama</span><br><br>
+      <span style="color:#4A4A4A;">Gemini 3 Flash via Ollama</span><br><br>
       <span style="color:#C9A84C;">Embeddings</span><br>
-      <span style="color:#C8C0B0;">all-MiniLM-L6-v2</span><br><br>
+      <span style="color:#4A4A4A;">all-MiniLM-L6-v2</span><br><br>
       <span style="color:#C9A84C;">Vector Store</span><br>
-      <span style="color:#C8C0B0;">ChromaDB</span><br><br>
+      <span style="color:#4A4A4A;">ChromaDB</span><br><br>
       <span style="color:#C9A84C;">Voice</span><br>
-      <span style="color:#C8C0B0;">Whisper Base</span>
+      <span style="color:#4A4A4A;">Whisper Base</span>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#8A8480; line-height:1.7;">
+    <div style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#3A3A3A; line-height:1.7;">
       VerdictAI provides legal information, not legal advice.
       Always consult a qualified attorney for important legal decisions.
     </div>
