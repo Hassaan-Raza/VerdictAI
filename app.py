@@ -496,6 +496,9 @@ st.markdown(
     <style>
     div[data-testid="stFileUploader"] {
         align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        display:flex;
     }
     </style>
     """,
