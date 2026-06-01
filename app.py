@@ -513,6 +513,8 @@ if uploaded:
         div.stButton {
             display: flex;
             justify-content: center;
+            flex-direction:column;
+            align-items:center;
         }
         </style>
         """,
