@@ -207,12 +207,20 @@ section[data-testid="stSidebar"] > div {
 }
 [data-testid="stSidebar"] p,
 [data-testid="stSidebar"] span,
-[data-testid="stSidebar"] div,
 [data-testid="stSidebarContent"] p,
-[data-testid="stSidebarContent"] span,
-[data-testid="stSidebarContent"] div {
+[data-testid="stSidebarContent"] span {
   color: #C8C0B0 !important;
   font-family: var(--mono) !important;
+}
+/* Sidebar uploader: make "Browse files" button text visible */
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button span,
+[data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] button span {
+  color: #C9A84C !important;
+}
+/* Sidebar uploader: dim the helper text */
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] small,
+[data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] small {
+  color: #6B6560 !important;
 }
 /* File uploader inside sidebar — subtle dark styling */
 [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"],
@@ -227,13 +235,13 @@ section[data-testid="stSidebar"] > div {
   color: #6B6560 !important;
 }
 
-/* Fix "uploadupload" double-text — hide the instructions text, keep the button */
-[data-testid="stFileUploaderDropzoneInstructions"] {
+/* Fix "uploadupload": the label text leaks into the dropzone — hide the small tag duplicate */
+[data-testid="stFileUploaderDropzone"] small,
+[data-testid="stFileUploaderDropzone"] [data-testid="stFileUploaderDropzoneInstructions"] > div > span {
   display: none !important;
 }
-/* Keep the browse button visible and styled */
+/* Keep the Browse files button styled */
 [data-testid="stFileUploaderDropzone"] button {
-  display: inline-flex !important;
   background: #2E2E3A !important;
   color: #C9A84C !important;
   border: 1px solid #C9A84C40 !important;
@@ -241,8 +249,6 @@ section[data-testid="stSidebar"] > div {
   font-size: 0.72rem !important;
   letter-spacing: 0.08em !important;
   border-radius: 2px !important;
-  padding: 0.4rem 1rem !important;
-  margin: 0.5rem auto !important;
 }
 /* Ensure sidebar uploader label is readable */
 [data-testid="stSidebar"] [data-testid="stFileUploader"] label,
