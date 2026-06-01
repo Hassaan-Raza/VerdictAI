@@ -462,123 +462,123 @@ st.markdown(f"""
     background:#EDE8DC;
 ">
 
-    <div style="
+<div style="
         display:flex;
         justify-content:space-between;
         align-items:flex-start;
         gap:3rem;
         margin-bottom:1rem;
-    ">
-        <span style="
+">
+    <span style="
             font-family:'DM Mono',monospace;
             font-size:0.68rem;
             color:#3A342F;
-        ">
+    ">
             VerdictAI · Legal Intelligence · Globally applicable
-        </span>
+    </span>
 
-        <span style="
+    <span style="
             font-family:'DM Mono',monospace;
             font-size:0.68rem;
             color:#3A342F;
             text-align:right;
-        ">
+    ">
             Not legal advice · Consult a qualified attorney for important decisions
-        </span>
-    </div>
+    </span>
+</div>
 
-    <div style="
+<div style="
         display:grid;
         grid-template-columns:repeat(4,1fr);
         gap:2rem;
         padding-top:1rem;
         border-top:1px solid #D4CCB8;
-    ">
+">
 
-        <div style="
+    <div style="
             font-family:'DM Mono',monospace;
             font-size:0.68rem;
             color:#5A534D;
             line-height:1.8;
-        ">
-            <div style="
+    ">
+        <div style="
                 color:#C9A84C;
                 font-size:0.62rem;
                 text-transform:uppercase;
                 letter-spacing:0.1em;
                 margin-bottom:0.4rem;
-            ">
-                About
-            </div>
-
-            VerdictAI analyzes legal documents and answers
-            questions in plain English using retrieval-augmented
-            AI and clause-aware document search.
+        ">
+            About
         </div>
 
-        <div style="
+        VerdictAI analyzes legal documents and answers
+        questions in plain English using retrieval-augmented
+        AI and clause-aware document search.
+    </div>
+
+    <div style="
             font-family:'DM Mono',monospace;
             font-size:0.68rem;
             color:#5A534D;
             line-height:1.8;
-        ">
-            <div style="
+    ">
+        <div style="
                 color:#C9A84C;
                 font-size:0.62rem;
                 text-transform:uppercase;
                 letter-spacing:0.1em;
                 margin-bottom:0.4rem;
-            ">
+        ">
                 Supported
-            </div>
+        </div>
 
             Contracts · NDAs · Leases<br>
             Employment Agreements<br>
             Terms of Service · Court Filings
-        </div>
+    </div>
 
-        <div style="
+    <div style="
             font-family:'DM Mono',monospace;
             font-size:0.68rem;
             color:#5A534D;
             line-height:1.8;
-        ">
-            <div style="
+    ">
+        <div style="
                 color:#C9A84C;
                 font-size:0.62rem;
                 text-transform:uppercase;
                 letter-spacing:0.1em;
                 margin-bottom:0.4rem;
-            ">
+        ">
                 Powered By
-            </div>
+        </div>
 
             Ollama Cloud · ChromaDB<br>
             HuggingFace Embeddings<br>
             Whisper · RAG Pipeline
-        </div>
+    </div>
 
-        <div style="
+    <div style="
             font-family:'DM Mono',monospace;
             font-size:0.68rem;
             color:#5A534D;
             line-height:1.8;
-        ">
-            <div style="
+    ">
+        <div style="
                 color:#C9A84C;
                 font-size:0.62rem;
                 text-transform:uppercase;
                 letter-spacing:0.1em;
                 margin-bottom:0.4rem;
-            ">
+        ">
                 Disclaimer
-            </div>
+        </div>
 
             AI-generated legal information only.
             Always review important legal matters
             with a qualified attorney.
-        </div>
-
     </div>
+
+</div>
 </div>
 """, unsafe_allow_html=True)
