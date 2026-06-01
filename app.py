@@ -454,7 +454,7 @@ if not st.session_state.document_uploaded:
                 st.rerun()
 
 # ── Footer ────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(f"""
 <div style="padding:1.5rem 3rem;border-top:1px solid #D4CCB8;margin-top:2rem;background:#EDE8DC;">
 
 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:3rem;margin-bottom:1rem;">
@@ -489,6 +489,7 @@ Terms of Service · Court Filings
 <div style="color:#C9A84C;font-size:0.62rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;">
 Powered By
 </div>
+Model · {OLLAMA_MODEL}<br>
 Ollama Cloud · ChromaDB<br>
 HuggingFace Embeddings<br>
 Whisper · RAG Pipeline
