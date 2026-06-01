@@ -212,48 +212,29 @@ section[data-testid="stSidebar"] > div {
   color: #C8C0B0 !important;
   font-family: var(--mono) !important;
 }
-/* Sidebar uploader: make "Browse files" button text visible */
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button span,
-[data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] button span {
-  color: #C9A84C !important;
-}
-/* Sidebar uploader: dim the helper text */
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] small,
-[data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] small {
-  color: #6B6560 !important;
-}
-/* File uploader inside sidebar — subtle dark styling */
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"],
-[data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] {
+
+/* ── File uploader (sidebar + main) ── */
+[data-testid="stFileUploaderDropzone"] {
   background: #1A1A24 !important;
   border-color: #2E2E3A !important;
 }
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] p,
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] span,
-[data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] p,
-[data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] span {
-  color: #6B6560 !important;
-}
-
-/* Fix "uploadupload": the label text leaks into the dropzone — hide the small tag duplicate */
-[data-testid="stFileUploaderDropzone"] small,
-[data-testid="stFileUploaderDropzone"] [data-testid="stFileUploaderDropzoneInstructions"] > div > span {
+/* Hide the duplicate instructions text that causes "uploadupload" */
+[data-testid="stFileUploaderDropzoneInstructions"] {
   display: none !important;
 }
-/* Keep the Browse files button styled */
+/* Browse files button */
 [data-testid="stFileUploaderDropzone"] button {
   background: #2E2E3A !important;
-  color: #C9A84C !important;
-  border: 1px solid #C9A84C40 !important;
+  border: 1px solid #3E3E4A !important;
+  border-radius: 2px !important;
   font-family: var(--mono) !important;
   font-size: 0.72rem !important;
   letter-spacing: 0.08em !important;
-  border-radius: 2px !important;
 }
-/* Ensure sidebar uploader label is readable */
-[data-testid="stSidebar"] [data-testid="stFileUploader"] label,
-[data-testid="stSidebarContent"] [data-testid="stFileUploader"] label {
-  color: #C8C0B0 !important;
+[data-testid="stFileUploaderDropzone"] button p,
+[data-testid="stFileUploaderDropzone"] button span {
+  color: #C9A84C !important;
+  font-family: var(--mono) !important;
 }
 
 /* ── Main content text ── */
