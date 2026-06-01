@@ -454,7 +454,7 @@ if not st.session_state.document_uploaded:
                 st.rerun()
 
 # ── Footer ────────────────────────────────────────────────────
-st.markdown(r"""
+st.markdown("""
 <div style="
     padding:1.5rem 3rem;
     border-top:1px solid #D4CCB8;
@@ -580,6 +580,5 @@ st.markdown(r"""
         </div>
 
     </div>
-
 </div>
 """, unsafe_allow_html=True)
