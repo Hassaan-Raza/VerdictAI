@@ -237,118 +237,107 @@ for k, v in [("doc_text", None), ("doc_id", None), ("collection", None),
     if k not in st.session_state:
         st.session_state[k] = v
 
-# ── Sidebar — info only ───────────────────────────────────────
-with st.sidebar:
-    st.markdown("""
-    <div style="padding:1.5rem 0;">
-      <div style="font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:600;
-                  color:#C9A84C; margin-bottom:1.5rem;">About VerdictAI</div>
-
-      <div style="font-family:'DM Mono',monospace; font-size:0.7rem; color:#C8C0B0;
-                  line-height:1.9;">
-        VerdictAI reads any legal document and answers your questions in plain English.
-        No legalese. No guesswork.<br><br>
-
-        <span style="color:#C9A84C;">Supported documents</span><br>
-        Contracts · NDAs · Leases<br>
-        Employment agreements<br>
-        Terms of service · Legislation<br>
-        Court filings · Any jurisdiction<br><br>
-
-        <span style="color:#C9A84C;">Powered by</span><br>
-        Ollama Cloud · ChromaDB<br>
-        HuggingFace Embeddings<br>
-        Whisper · RAG Pipeline<br><br>
-
-        <span style="color:#C9A84C;">Model</span><br>
-        Gemma 4 via Ollama Cloud<br><br>
-
-        <span style="color:#C9A84C;">Disclaimer</span><br>
-        VerdictAI provides legal information,
-        not legal advice. Always consult a
-        qualified attorney for important
-        legal decisions.
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-
 # ── Header ────────────────────────────────────────────────────
-hcol1, hcol2 = st.columns([1, 8])
-with hcol1:
-    if st.button("ℹ️ Info", use_container_width=True):
+st.markdown("""
+<div style="padding: 1.8rem 3rem 1rem; border-bottom: 1px solid #D4CCB8;
+            display:flex; align-items:center; justify-content:space-between;">
+  <div>
+    <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:0.2rem;">
+      <span style="font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:700;
+                   color:#0A0A0F; letter-spacing:-0.02em; line-height:1;">
+        Verdict<span style="color:#C9A84C; font-style:italic;">AI</span>
+      </span>
+      <span style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#6B6560;
+                   letter-spacing:0.15em; text-transform:uppercase;
+                   border:1px solid #D4CCB8; padding:2px 8px; border-radius:2px;">
+        Legal Intelligence
+      </span>
+    </div>
+    <p style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#6B6560; margin:0;">
+      Upload any legal document · Ask in plain English · Get cited answers · Any jurisdiction
+    </p>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Info toggle button — rendered right after header
+info_col, _ = st.columns([1, 8])
+with info_col:
+    if st.button("ℹ️ About", use_container_width=True):
         st.session_state.show_info = not st.session_state.show_info
-        # toggle sidebar via rerun — Streamlit doesn't support programmatic sidebar toggle
-        # so we use a workaround with JS
-        st.markdown("""<script>
-        const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
-        if(sidebar) sidebar.style.display = sidebar.style.display === 'none' ? '' : 'none';
-        </script>""", unsafe_allow_html=True)
         st.rerun()
 
-with hcol2:
+# Inline info panel
+if st.session_state.show_info:
     st.markdown("""
-    <div style="padding: 1.5rem 1rem 1rem 0;">
-      <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:0.2rem;">
-        <span style="font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:700;
-                     color:#0A0A0F; letter-spacing:-0.02em; line-height:1;">
-          Verdict<span style="color:#C9A84C; font-style:italic;">AI</span>
-        </span>
-        <span style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#6B6560;
-                     letter-spacing:0.15em; text-transform:uppercase;
-                     border:1px solid #D4CCB8; padding:2px 8px; border-radius:2px;">
-          Legal Intelligence
-        </span>
+    <div style="margin:0 3rem 1rem; padding:1.5rem 2rem;
+                background:#0A0A0F; border-radius:4px;
+                display:flex; gap:4rem;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#C8C0B0; line-height:1.9;">
+        <span style="color:#C9A84C; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em;">About</span><br>
+        VerdictAI reads any legal document and answers your<br>
+        questions in plain English. No legalese. No guesswork.
       </div>
-      <p style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#6B6560; margin:0;">
-        Upload any legal document · Ask in plain English · Get cited answers · Any jurisdiction
-      </p>
+      <div style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#C8C0B0; line-height:1.9;">
+        <span style="color:#C9A84C; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em;">Supported</span><br>
+        Contracts · NDAs · Leases<br>
+        Employment agreements · TOS<br>
+        Court filings · Any jurisdiction
+      </div>
+      <div style="font-family:'DM Mono',monospace; font-size:0.72rem; color:#C8C0B0; line-height:1.9;">
+        <span style="color:#C9A84C; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em;">Powered by</span><br>
+        Ollama Cloud · ChromaDB<br>
+        HuggingFace Embeddings<br>
+        RAG Pipeline · Whisper
+      </div>
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; color:#556070; line-height:1.7; max-width:220px;">
+        <span style="color:#C9A84C; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em;">Disclaimer</span><br>
+        VerdictAI provides legal information, not legal advice.
+        Always consult a qualified attorney for important decisions.
+      </div>
     </div>
     """, unsafe_allow_html=True)
 
 st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
 
-# ── Upload area — always in main ──────────────────────────────
+# ── Upload area — full width ───────────────────────────────────
 pad = "padding: 1.5rem 3rem;"
 
-with st.container():
-    st.markdown(f'<div style="{pad} padding-bottom:0.5rem;">', unsafe_allow_html=True)
+st.markdown(f'<div style="{pad} padding-bottom:0.5rem;">', unsafe_allow_html=True)
 
-    up_col1, up_col2 = st.columns([3, 2], gap="large")
+st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
+            color:#6B6560; text-transform:uppercase; letter-spacing:0.1em;
+            margin-bottom:0.5rem;">Upload Document</div>""", unsafe_allow_html=True)
 
-    with up_col1:
-        st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
-                    color:#6B6560; text-transform:uppercase; letter-spacing:0.1em;
-                    margin-bottom:0.4rem;">Upload Document</div>""", unsafe_allow_html=True)
-        uploaded = st.file_uploader("Upload", type=["pdf", "txt"], label_visibility="collapsed")
-        if uploaded:
-            if st.button("⚖ Process Document", type="primary", use_container_width=True):
-                with st.spinner("Extracting and indexing..."):
-                    raw    = uploaded.read()
-                    text   = extract_text(raw, uploaded.name)
-                    doc_id = uploaded.name.replace(" ", "_").replace(".", "_")
-                    col    = index_document(text, doc_id)
-                    st.session_state.doc_text       = text
-                    st.session_state.doc_id         = doc_id
-                    st.session_state.collection     = col
-                    st.session_state.chat_history   = []
-                    st.session_state.analysis_cache = {}
-                st.success(f"Ready — {len(text):,} characters indexed")
+uploaded = st.file_uploader("Upload", type=["pdf", "txt"], label_visibility="collapsed")
+if uploaded:
+    if st.button("⚖ Process Document", type="primary"):
+        with st.spinner("Extracting and indexing..."):
+            raw    = uploaded.read()
+            text   = extract_text(raw, uploaded.name)
+            doc_id = uploaded.name.replace(" ", "_").replace(".", "_")
+            col    = index_document(text, doc_id)
+            st.session_state.doc_text       = text
+            st.session_state.doc_id         = doc_id
+            st.session_state.collection     = col
+            st.session_state.chat_history   = []
+            st.session_state.analysis_cache = {}
+        st.success(f"Ready — {len(text):,} characters indexed")
 
-    with up_col2:
-        if st.session_state.doc_text:
-            st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
-                        color:#6B6560; text-transform:uppercase; letter-spacing:0.1em;
-                        margin-bottom:0.4rem;">Compare with second document</div>""",
-                        unsafe_allow_html=True)
-            uploaded_2 = st.file_uploader("Second doc", type=["pdf", "txt"],
-                                           label_visibility="collapsed", key="doc2")
-            if uploaded_2:
-                raw2 = uploaded_2.read()
-                st.session_state.doc_text_2 = extract_text(raw2, uploaded_2.name)
-                st.success("Second document loaded")
+if st.session_state.doc_text:
+    st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
+                color:#6B6560; text-transform:uppercase; letter-spacing:0.1em;
+                margin-top:1rem; margin-bottom:0.5rem;">Compare with second document (optional)</div>""",
+                unsafe_allow_html=True)
+    uploaded_2 = st.file_uploader("Second doc", type=["pdf", "txt"],
+                                   label_visibility="collapsed", key="doc2")
+    if uploaded_2:
+        raw2 = uploaded_2.read()
+        st.session_state.doc_text_2 = extract_text(raw2, uploaded_2.name)
+        st.success("Second document loaded")
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
+st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
 st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
 
 # ── Main content ──────────────────────────────────────────────
