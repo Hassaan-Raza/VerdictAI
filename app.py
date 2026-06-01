@@ -462,13 +462,13 @@ with st.sidebar:
     st.markdown("""
     <div style="font-family:'DM Mono',monospace; font-size:0.62rem; line-height:2;">
       <span style="color:#C9A84C;">Model</span><br>
-      <span style="color:#4A4A4A;">Gemini 3 Flash via Ollama</span><br><br>
+      <span style="color:#C9A84C;">Gemini 3 Flash via Ollama</span><br><br>
       <span style="color:#C9A84C;">Embeddings</span><br>
-      <span style="color:#4A4A4A;">all-MiniLM-L6-v2</span><br><br>
+      <span style="color:#C9A84C;">all-MiniLM-L6-v2</span><br><br>
       <span style="color:#C9A84C;">Vector Store</span><br>
-      <span style="color:#4A4A4A;">ChromaDB</span><br><br>
+      <span style="color:#C9A84C;">ChromaDB</span><br><br>
       <span style="color:#C9A84C;">Voice</span><br>
-      <span style="color:#4A4A4A;">Whisper Base</span>
+      <span style="color:#C9A84C;">Whisper Base</span>
     </div>
     """, unsafe_allow_html=True)
 
