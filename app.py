@@ -465,8 +465,9 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
+    st.markdown('<div style="font-family:DM Mono,monospace;font-size:0.62rem;color:#A09890;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;">Upload Document</div>', unsafe_allow_html=True)
     uploaded = st.file_uploader("Upload Document", type=["pdf", "txt"],
-                                label_visibility="visible")
+                                label_visibility="collapsed")
 
     if uploaded:
         if st.button("⚖ Process Document", use_container_width=True, type="primary"):
