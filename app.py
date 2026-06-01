@@ -300,9 +300,10 @@ if st.session_state.show_info:
 
 st.markdown("<hr style='border-color:#D4CCB8; margin:0 3rem;'>", unsafe_allow_html=True)
 # ── Main content ──────────────────────────────────────────────
-document_uploaded=False
+if "document_uploaded" not in st.session_state:
+    st.session_state.document_uploaded = False
 pad = "padding: 1.5rem 3rem;"
-if document_uploaded==True:
+if st.session_state.document_uploaded:
     if not st.session_state.doc_text:
         st.markdown(f"""
         <div style="{pad}">
@@ -450,7 +451,7 @@ if document_uploaded==True:
     
 # ── Upload area — full width ───────────────────────────────────
 
-if document_uploaded==False:
+if not st.session_state.document_uploaded:
     st.markdown(f'<div style="{pad} padding-bottom:0.5rem;">', unsafe_allow_html=True)
 
     st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
@@ -487,7 +488,7 @@ if document_uploaded==False:
                     st.session_state.analysis_cache = {}
                 st.success(f"Ready — {len(text):,} characters indexed")
                 time.sleep(5)
-                document_uploaded=True
+                st.session_state.document_uploaded = True
                 st.rerun()
 
 # ── Footer ────────────────────────────────────────────────────
