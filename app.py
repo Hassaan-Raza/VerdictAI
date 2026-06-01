@@ -521,6 +521,7 @@ if uploaded:
                 st.session_state.chat_history = []
                 st.session_state.analysis_cache = {}
             st.success(f"Ready — {len(text):,} characters indexed")
+            st.rerun()
 
 if st.session_state.doc_text:
     st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
