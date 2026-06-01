@@ -203,7 +203,7 @@ section[data-testid="stSidebar"] > div {
 }
 [data-testid="stSidebar"] label,
 [data-testid="stSidebarContent"] label {
-  color: #6B6560 !important;
+  color: #A09890 !important;
 }
 [data-testid="stSidebar"] p,
 [data-testid="stSidebar"] span,
@@ -225,6 +225,17 @@ section[data-testid="stSidebar"] > div {
 [data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] p,
 [data-testid="stSidebarContent"] [data-testid="stFileUploaderDropzone"] span {
   color: #6B6560 !important;
+}
+
+/* Fix "uploadupload" double-text bug in Streamlit's file uploader button */
+[data-testid="stFileUploaderDropzoneInput"] + div button span:last-child,
+[data-testid="stFileUploaderDropzone"] button span + span {
+  display: none !important;
+}
+/* Ensure sidebar uploader label is readable */
+[data-testid="stSidebar"] [data-testid="stFileUploader"] label,
+[data-testid="stSidebarContent"] [data-testid="stFileUploader"] label {
+  color: #C8C0B0 !important;
 }
 
 /* ── Main content text ── */
