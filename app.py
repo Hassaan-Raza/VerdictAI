@@ -504,5 +504,20 @@ AI-generated legal information only. Always review important legal matters with 
 
 </div>
 
+<!-- NEW CENTERED CREDIT SECTION -->
+<div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid #D4CCB8;text-align:center;font-family:'DM Mono',monospace;font-size:0.7rem;color:#3A342F;">
+
+Made with ❤️ by Hassaan Raza<br>
+
+<a href="https://www.linkedin.com/in/hassaan-raza-00124031a/" target="_blank" style="color:#C9A84C;text-decoration:none;">
+LinkedIn
+</a>
+&nbsp;·&nbsp;
+<a href="https://github.com/Hassaan-Raza" target="_blank" style="color:#C9A84C;text-decoration:none;">
+GitHub
+</a>
+
+</div>
+
 </div>
 """, unsafe_allow_html=True)
