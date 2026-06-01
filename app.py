@@ -506,18 +506,25 @@ st.markdown(
 )
 uploaded = st.file_uploader("Upload", type=["pdf", "txt"], label_visibility="collapsed")
 if uploaded:
+
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+
+
     if st.button("⚖ Process Document", type="primary"):
         with st.spinner("Extracting and indexing..."):
-            raw    = uploaded.read()
-            text   = extract_text(raw, uploaded.name)
+            raw = uploaded.read()
+            text = extract_text(raw, uploaded.name)
             doc_id = uploaded.name.replace(" ", "_").replace(".", "_")
-            col    = index_document(text, doc_id)
-            st.session_state.doc_text       = text
-            st.session_state.doc_id         = doc_id
-            st.session_state.collection     = col
-            st.session_state.chat_history   = []
+            col = index_document(text, doc_id)
+            st.session_state.doc_text = text
+            st.session_state.doc_id = doc_id
+            st.session_state.collection = col
+            st.session_state.chat_history = []
             st.session_state.analysis_cache = {}
         st.success(f"Ready — {len(text):,} characters indexed")
+
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 if st.session_state.doc_text:
     st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
