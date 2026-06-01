@@ -448,8 +448,8 @@ else:
         st.markdown("</div>", unsafe_allow_html=True)
     
 # ── Upload area — full width ───────────────────────────────────
-document_uploaded=false
-if document_uploaded==false:
+document_uploaded=False
+if document_uploaded==False:
     st.markdown(f'<div style="{pad} padding-bottom:0.5rem;">', unsafe_allow_html=True)
 
     st.markdown("""<div style="font-family:'DM Mono',monospace; font-size:0.62rem;
