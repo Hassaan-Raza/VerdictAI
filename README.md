@@ -161,7 +161,6 @@ ollama>=0.4.0
 chromadb==0.4.24
 protobuf==3.20.3
 python-dotenv>=1.0.0
-faster-whisper>=1.0.0
 ```
 
 ---
