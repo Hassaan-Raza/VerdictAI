@@ -80,7 +80,6 @@ This is Retrieval Augmented Generation applied to law. Every answer is grounded 
 | Vector Store | ChromaDB |
 | Embeddings | HuggingFace all-MiniLM-L6-v2 |
 | PDF Extraction | PyMuPDF (fitz) |
-| Transcription | faster-whisper |
 | Deployment | Streamlit Cloud |
 
 ---
@@ -162,7 +161,6 @@ ollama>=0.4.0
 chromadb==0.4.24
 protobuf==3.20.3
 python-dotenv>=1.0.0
-faster-whisper>=1.0.0
 ```
 
 ---
